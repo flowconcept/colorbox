@@ -377,11 +377,11 @@ class ColorboxSettingsForm extends SystemConfigFormBase {
       ->set('advanced.compression_type', $form_values['colorbox_compression_type']);
 
     if (isset($form_values['colorbox_image_style'])) {
-      $config->set('insert.image_style', 'colorbox_image_style');
+      $config->set('insert.image_style', $form_values['colorbox_image_style']);
     }
 
     if (isset($form_values['colorbox_insert_gallery'])) {
-      $config->set('insert.insert_gallery', 'colorbox_insert_gallery');
+      $config->set('insert.insert_gallery', $form_values['colorbox_insert_gallery']);
     }
 
     $config->save();

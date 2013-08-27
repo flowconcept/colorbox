@@ -117,6 +117,7 @@ function _colorbox_active() {
 
   $current_path = current_path();
   // Code from the block_list funtion in block.module.
+
   $path = Drupal::service('path.alias_manager.cached')->getPathAlias($current_path);
   $colorbox_pages = $config->get('colorbox_pages');
   // Compare with the internal and path alias (if any).

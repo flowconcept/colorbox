@@ -39,7 +39,6 @@ class ColorboxFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsForm(array $form, array &$form_state) {
-
     $image_styles = image_style_options(FALSE);
     $image_styles_hide = $image_styles;
     $image_styles_hide['hide'] = t('Hide (do not display image)');
@@ -199,6 +198,7 @@ class ColorboxFormatter extends FormatterBase {
       'custom' => t('Custom (with tokens)'),
       'none' => t('None'),
     );
+
     if ($this->getSetting('colorbox_caption')) {
       $summary[] = t('Colorbox caption: @type', array('@type' => $caption[$this->getSetting('colorbox_caption')]));
     }
