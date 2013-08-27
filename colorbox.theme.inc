@@ -24,9 +24,9 @@ function theme_colorbox_image_formatter($variables) {
   $settings = $variables['display_settings'];
 
   $image = array(
-    'path' => $item['uri'],
-    'alt' => $item['alt'],
-    'title' => $item['title'],
+    'uri' => $item['entity']->getFileUri(),
+    'alt' => isset($item['alt']) ? $item['alt'] : '',
+    'title' => isset($item['title']) ? $item['title'] : '',
     'style_name' => $settings['colorbox_node_style'],
   );
 
@@ -35,7 +35,7 @@ function theme_colorbox_image_formatter($variables) {
     $image['height'] = $item['height'];
   }
 
-  $entity_title = entity_label($entity_type, $entity);
+  $entity_title = $entity->label();
 
   switch ($settings['colorbox_caption']) {
      case 'auto':
@@ -77,7 +77,8 @@ function theme_colorbox_image_formatter($variables) {
   }
 
   // Build the gallery id.
-  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+  $id = $entity->id();
+  $bundle = $entity->bundle();
   $entity_id = !empty($id) ? $entity_type . '-' . $id : 'entity-id';
   switch ($settings['colorbox_gallery']) {
     case 'post':
@@ -87,10 +88,10 @@ function theme_colorbox_image_formatter($variables) {
       $gallery_id = 'gallery-all';
       break;
     case 'field_post':
-      $gallery_id = 'gallery-' . $entity_id . '-' . $field['field_name'];
+      $gallery_id = 'gallery-' . $entity_id . '-' . $field->getFieldName();
       break;
     case 'field_page':
-      $gallery_id = 'gallery-' . $field['field_name'];
+      $gallery_id = 'gallery-' . $field->getFieldName();
       break;
     case 'custom':
       $gallery_id = $settings['colorbox_gallery_custom'];
@@ -100,10 +101,10 @@ function theme_colorbox_image_formatter($variables) {
   }
 
   if ($style_name = $settings['colorbox_image_style']) {
-    $path = image_style_url($style_name, $image['path']);
+    $path = image_style_url($style_name, $image['uri']);
   }
   else {
-    $path = file_create_url($image['path']);
+    $path = file_create_url($image['uri']);
   }
 
   return theme('colorbox_imagefield', array('image' => $image, 'path' => $path, 'title' => $caption, 'gid' => $gallery_id));

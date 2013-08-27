@@ -1,0 +1,14 @@
+colorbox.settings:
+  type: mapping
+  label: 'Colorbox settings'
+  mapping:
+    insert:
+      type: mapping
+      label: 'Insert module settings'
+      mapping:
+        image_style:
+          type: string
+          label: 'Image style'
+        insert_gallery:
+          type: integer
+          label: 'Insert image gallery'
