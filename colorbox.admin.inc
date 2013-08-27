@@ -11,7 +11,10 @@
 function colorbox_admin_settings() {
   drupal_add_js(drupal_get_path('module', 'colorbox') . '/js/colorbox_admin_settings.js', array('preprocess' => FALSE));
 
-  $library = libraries_detect('colorbox');
+  //$library = libraries_detect('colorbox');
+  $library = array(
+    'library path' => '',
+  );
 
   if (module_exists('insert')) {
     $form['colorbox_insert_module'] = array(

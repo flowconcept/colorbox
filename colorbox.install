@@ -8,40 +8,40 @@
 /**
  * Implements hook_requirements().
  */
-function colorbox_requirements($phase) {
-  $requirements = array();
-
-  if ($phase == 'runtime') {
-    $t = get_t();
-    $library = libraries_detect('colorbox');
-
-    if (empty($library['installed'])) {
-      $requirements['colorbox_plugin'] = array(
-        'title' => $t('Colorbox plugin'),
-        'value' => $t('At least @a', array('@a' => COLORBOX_MIN_PLUGIN_VERSION)),
-        'severity' => REQUIREMENT_ERROR,
-        'description' => $t('You need to download the !colorbox, extract the archive and place the colorbox directory in the %path directory on your server.', array('!colorbox' => l($t('Colorbox plugin'), $library['download url']), '%path' => 'sites/all/libraries')),
-      );
-    }
-    elseif (version_compare($library['version'], COLORBOX_MIN_PLUGIN_VERSION, '>=')) {
-      $requirements['colorbox_plugin'] = array(
-        'title' => $t('Colorbox plugin'),
-        'severity' => REQUIREMENT_OK,
-        'value' => $library['version'],
-      );
-    }
-    else {
-      $requirements['colorbox_plugin'] = array(
-        'title' => $t('Colorbox plugin'),
-        'value' => $t('At least @a', array('@a' => COLORBOX_MIN_PLUGIN_VERSION)),
-        'severity' => REQUIREMENT_ERROR,
-        'description' => $t('You need to download a later version of the !colorbox and replace the old version located in the %path directory on your server.', array('!colorbox' => l($t('Colorbox plugin'), $library['download url']), '%path' => $library['library path'])),
-      );
-    }
-  }
-
-  return $requirements;
-}
+// function colorbox_requirements($phase) {
+//   $requirements = array();
+//
+//   if ($phase == 'runtime') {
+//     $t = get_t();
+//     $library = libraries_detect('colorbox');
+//
+//     if (empty($library['installed'])) {
+//       $requirements['colorbox_plugin'] = array(
+//         'title' => $t('Colorbox plugin'),
+//         'value' => $t('At least @a', array('@a' => COLORBOX_MIN_PLUGIN_VERSION)),
+//         'severity' => REQUIREMENT_ERROR,
+//         'description' => $t('You need to download the !colorbox, extract the archive and place the colorbox directory in the %path directory on your server.', array('!colorbox' => l($t('Colorbox plugin'), $library['download url']), '%path' => 'sites/all/libraries')),
+//       );
+//     }
+//     elseif (version_compare($library['version'], COLORBOX_MIN_PLUGIN_VERSION, '>=')) {
+//       $requirements['colorbox_plugin'] = array(
+//         'title' => $t('Colorbox plugin'),
+//         'severity' => REQUIREMENT_OK,
+//         'value' => $library['version'],
+//       );
+//     }
+//     else {
+//       $requirements['colorbox_plugin'] = array(
+//         'title' => $t('Colorbox plugin'),
+//         'value' => $t('At least @a', array('@a' => COLORBOX_MIN_PLUGIN_VERSION)),
+//         'severity' => REQUIREMENT_ERROR,
+//         'description' => $t('You need to download a later version of the !colorbox and replace the old version located in the %path directory on your server.', array('!colorbox' => l($t('Colorbox plugin'), $library['download url']), '%path' => $library['library path'])),
+//       );
+//     }
+//   }
+//
+//   return $requirements;
+// }
 
 /**
  * Implements hook_uninstall().
