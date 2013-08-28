@@ -2,6 +2,109 @@ colorbox.settings:
   type: mapping
   label: 'Colorbox settings'
   mapping:
+    extra:
+      type: mapping
+      label: 'Extra features'
+      mapping:
+        load:
+          type: boolean
+          label: 'Enable Colorbox load'
+        inline:
+          type: boolean
+          label: 'Enable Colorbox inline'
+    custom:
+      style:
+        type: string
+        label: 'Style'
+      activate:
+        type: boolean
+        label: 'Options'
+      transition_type:
+        type: string
+        label: 'Transition type'
+      transition_speed:
+        type: integer
+        label: 'Transition speed'
+      opacity:
+        type: float
+        label: 'Opacity'
+      text_current:
+        type: text
+        label: 'Current'
+      text_previous:
+        type: text
+        label: 'Previous'
+      text_next:
+        type: text
+        label: 'Next'
+      text_close:
+        type: text
+        label: 'Close'
+      overlayclose:
+        type: boolean
+        label: 'Overlay close'
+      maxwidth:
+        type: text
+        label: 'Max width'
+      maxheight:
+        type: text
+        label: 'Max height'
+      initialwidth:
+        type: text
+        label: 'Initial width'
+      initialheight:
+        type: text
+        label: 'Initial height'
+      fixed:
+        type: boolean
+        label: 'Fixed'
+      scrolling:
+        type: boolean
+        label: 'Scrollbars'
+      slideshow:
+        type: mapping
+        label: 'Slideshow'
+        mapping:
+          slideshow:
+            type: boolean
+            label: 'Slideshow'
+          auto:
+            type: boolean
+            label: 'Slideshow autostart'
+          speed:
+            type: integer
+            label: 'Slideshow speed'
+          text_start:
+            type: text
+            label: 'Start slideshow'
+          text_stop:
+            type: text
+            label: 'Stop slideshow'
+    advanced:
+      type: mapping
+      label: 'Advanced settings'
+      mapping:
+        mobile_detect:
+          type: boolean
+          label: 'Mobile detection'
+        mobile_device_width:
+          type: 'string'
+          label: 'Device width'
+        caption_trim:
+          type: boolean
+          label: 'Caption shortening'
+        caption_trim_length:
+          type: integer
+          label: 'Caption max length'
+        visibility:
+          type: integer
+          label: 'Show Colorbox on specific pages'
+        pages:
+          type: string
+          label: 'Pages'
+        compression_type:
+          type: string
+          label: 'Colorbox compression level'
     insert:
       type: mapping
       label: 'Insert module settings'

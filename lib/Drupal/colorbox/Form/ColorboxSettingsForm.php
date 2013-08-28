@@ -225,7 +225,7 @@ class ColorboxSettingsForm extends SystemConfigFormBase {
       '#description' => t('If false, Colorbox will hide scrollbars for overflowing content. This could be used on conjunction with the resize method for a smoother transition if you are appending content to an already open instance of Colorbox.'),
     );
 
-    $js_hide = variable_get('colorbox_slideshow', 0) ? '' : ' js-hide';
+    $js_hide = $config->get('custom.slideshow.slideshow') ? '' : ' js-hide';
     $form['colorbox_custom_settings']['colorbox_slideshow_settings']['wrapper_start'] = array(
       '#markup' => '<div class="colorbox-slideshow-settings' . $js_hide . '">',
     );
