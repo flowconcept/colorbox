@@ -126,6 +126,42 @@ function colorbox_update_7202() {
  */
 function colorbox_update_8000() {
 
-  // TO-DO
+  update_variables_to_config(
+    'colorbox.settings',
+    array(
+      'colorbox_load' => 'extra.load',
+      'colorbox_inline' => 'extra.inline',
+      'colorbox_style' => 'custom.style',
+      'colorbox_custom_settings_activate' => 'custom.activate',
+      'colorbox_transition_type' => 'custom.transition_type',
+      'colorbox_transition_speed' => 'custom.transition_speed',
+      'colorbox_opacity' => 'custom.opacity',
+      'colorbox_text_current' => 'custom.text_current',
+      'colorbox_text_previous' => 'custom.text_previous',
+      'colorbox_text_next' => 'custom.text_next',
+      'colorbox_text_close' => 'custom.text_close',
+      'colorbox_overlayclose' => 'custom.overlayclose',
+      'colorbox_maxwidth' => 'custom.maxwidth',
+      'colorbox_maxheight' => 'custom.maxheight',
+      'colorbox_initialwidth' => 'custom.initialwidth',
+      'colorbox_initialheight' => 'custom.initialheight',
+      'colorbox_fixed' => 'custom.fixed',
+      'colorbox_scrolling' => 'custom.scrolling',
+      'colorbox_slideshow' => 'custom.slideshow.slideshow',
+      'colorbox_slideshowauto' => 'custom.slideshow.auto',
+      'colorbox_slideshowspeed' => 'custom.slideshow.speed',
+      'colorbox_text_start' => 'custom.slideshow.text_start',
+      'colorbox_text_stop' => 'custom.slideshow.text_stop',
+      'colorbox_mobile_detect' => 'advanced.mobile_detect',
+      'colorbox_mobile_device_width' => 'advanced.mobile_device_width',
+      'colorbox_caption_trim' => 'advanced.caption_trim',
+      'colorbox_caption_trim_length' => 'advanced.caption_trim_length',
+      'colorbox_visibility' => 'advanced.visibility',
+      'colorbox_pages' => 'advanced.pages',
+      'colorbox_compression_type' => 'advanced.compression_type',
+      'colorbox_image_style' => 'insert.image_style',
+      'colorbox_insert_gallery' => 'insert.insert_gallery',
+    )
+  );
 
 }

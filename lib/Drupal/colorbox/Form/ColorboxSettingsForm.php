@@ -107,7 +107,7 @@ class ColorboxSettingsForm extends SystemConfigFormBase {
       '#suffix' => '</div>',
     );
 
-    $js_hide = variable_get('colorbox_custom_settings_activate', 0) ? '' : ' js-hide';
+    $js_hide = $config->get('custom.activate') ? '' : ' js-hide';
     $form['colorbox_custom_settings']['wrapper_start'] = array(
       '#markup' => '<div class="colorbox-custom-settings' . $js_hide . '">',
     );
