@@ -9,7 +9,6 @@
  * Implementation of hook_views_data()
  */
 function colorbox_views_data() {
-
   $data['colorbox']['table']['group'] = t('Colorbox');
 
   $data['colorbox']['table']['join'] = array(
@@ -20,7 +19,7 @@ function colorbox_views_data() {
     'title' => t('Colorbox trigger'),
     'help' => t('Provide custom text or link.'),
     'field' => array(
-      'handler' => 'colorbox_handler_field_colorbox',
+      'id' => 'colorbox',
     ),
   );
 

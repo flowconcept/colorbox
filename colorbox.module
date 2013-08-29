@@ -51,16 +51,6 @@ function colorbox_theme() {
 }
 
 /**
- * Implements hook_views_api().
- */
-function colorbox_views_api() {
-  return array(
-    'api' => 3,
-    'path' => drupal_get_path('module', 'colorbox') . '/views',
-  );
-}
-
-/**
  * Implements hook_library_info().
  */
 function colorbox_library_info() {

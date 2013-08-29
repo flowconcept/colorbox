@@ -2,21 +2,29 @@
 
 /**
  * @file
- * Views handlers for Colorbox module.
+ * Definition of Drupal\colorbox\Plugin\views\field\Colorbox.
  */
+
+namespace Drupal\colorbox\Plugin\views\field;
+
+use Drupal\Component\Annotation\PluginID;
+use Drupal\Core\Annotation\Translation;
+use Drupal\views\Plugin\views\field\FieldPluginBase;
 
 /**
  * A handler to provide a field that is completely custom by the administrator.
  *
  * @ingroup views_field_handlers
+ *
+ * @PluginID("colorbox")
  */
-class colorbox_handler_field_colorbox extends views_handler_field {
+class Colorbox extends FieldPluginBase {
   function query() {
     // Do nothing, as this handler does not need to do anything to the query itself.
   }
 
-  function option_definition() {
-    $options = parent::option_definition();
+  function defineOptions() {
+    $options = parent::defineOptions();
 
     $options['trigger_field'] = array('default' => '');
     $options['popup'] = array('default' => '');
@@ -29,14 +37,14 @@ class colorbox_handler_field_colorbox extends views_handler_field {
     return $options;
   }
 
-  function options_form(&$form, &$form_state) {
-    parent::options_form($form, $form_state);
+  function buildOptionsForm(&$form, &$form_state) {
+    parent::buildOptionsForm($form, $form_state);
 
     // Get a list of the available fields and arguments for trigger field and token replacement.
     $options = array();
     $fields = array('trigger_field' => t('- None -'));
-    foreach ($this->view->display_handler->get_handlers('field') as $field => $handler) {
-      $options[t('Fields')]["[$field]"] = $handler->ui_name();
+    foreach ($this->view->display_handler->getHandlers('field') as $field => $handler) {
+      $options[t('Fields')]["[$field]"] = $handler->adminLabel();
       // We only use fields up to (and including) this one.
       if ($field == $this->options['id']) {
         break;
@@ -45,12 +53,12 @@ class colorbox_handler_field_colorbox extends views_handler_field {
       $fields[$field] = $handler->definition['title'];
     }
     $count = 0; // This lets us prepare the key as we want it printed.
-    foreach ($this->view->display_handler->get_handlers('argument') as $arg => $handler) {
-      $options[t('Arguments')]['%' . ++$count] = t('@argument title', array('@argument' => $handler->ui_name()));
-      $options[t('Arguments')]['!' . $count] = t('@argument input', array('@argument' => $handler->ui_name()));
+    foreach ($this->view->display_handler->getHandlers('argument') as $arg => $handler) {
+      $options[t('Arguments')]['%' . ++$count] = t('@argument title', array('@argument' => $handler->adminLabel()));
+      $options[t('Arguments')]['!' . $count] = t('@argument input', array('@argument' => $handler->adminLabel()));
     }
 
-    $this->document_self_tokens($options[t('Fields')]);
+    $this->documentSelfTokens($options[t('Fields')]);
 
     // Default text.
     $patterns = t('<p>You must add some additional fields to this display before using this field. These fields may be marked as <em>Exclude from display</em> if you prefer. Note that due to rendering order, you cannot use fields that come after this field; if you need a field not listed here, rearrange your fields.</p>');
@@ -143,8 +151,9 @@ If you would like to have the characters %5B and %5D please use the html entity 
    * Render the trigger field and its linked popup information.
    */
   function render($values) {
+    $config = config('colorbox.settings');
     // Load the necessary js file for Colorbox activation.
-    if (_colorbox_active() && !variable_get('colorbox_inline', 0)) {
+    if (_colorbox_active() && !$config->get('extra.inline')) {
       drupal_add_js(drupal_get_path('module', 'colorbox') . '/js/colorbox_inline.js');
     }
 
@@ -159,7 +168,7 @@ If you would like to have the characters %5B and %5D please use the html entity 
 
     // Get the token information and generate the value for the popup and the
     // caption.
-    $tokens = $this->get_render_tokens($this->options['alter']);
+    $tokens = $this->getRenderTokens($this->options['alter']);
     $popup = filter_xss_admin($this->options['popup']);
     $caption = filter_xss_admin($this->options['caption']);
     $gallery = filter_xss_admin($this->options['custom_gid']);
