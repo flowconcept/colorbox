@@ -51,27 +51,41 @@ function colorbox_theme() {
 }
 
 /**
- * Implements hook_library_info().
+ * Implements hook_libraries_info().
  */
-function colorbox_library_info() {
-  $libraries = array();
-  $base = drupal_get_path('module', 'colorbox') . '/js/colorbox';
-  $libraries['colorbox.source'] = array(
-    'title' => 'Colorbox plugin',
-    'website' => 'http://www.jacklmoore.com/colorbox',
-    'version' => '1.4.27',
-    'js' => array(
-      $base . '/jquery.colorbox.js' => array(),
+function colorbox_libraries_info() {
+  $libraries['colorbox'] = array(
+    'name' => 'Colorbox plugin',
+    'vendor url' => 'http://www.jacklmoore.com/colorbox',
+    'download url' => 'https://github.com/jackmoore/colorbox/archive/1.x.zip',
+    'version arguments' => array(
+      'file' => 'jquery.colorbox-min.js',
+      'pattern' => '@(?i:Colorbox) v([0-9\.a-z]+)@',
+      'lines' => 5,
+    ),
+    'files' => array(
+      'js' => array(
+        'jquery.colorbox-min.js',
+      ),
+    ),
+    'variants' => array(
+      'minified' => array(
+        'files' => array(
+          'js' => array(
+            'jquery.colorbox-min.js',
+          ),
+        ),
+      ),
+      'source' => array(
+        'files' => array(
+          'js' => array(
+            'jquery.colorbox.js',
+          ),
+        ),
+      ),
     ),
   );
-  $libraries['colorbox.minified'] = array(
-    'title' => 'Colorbox plugin ',
-    'website' => 'http://www.jacklmoore.com/colorbox',
-    'version' => '1.4.27',
-    'js' => array(
-      $base . '/jquery.colorbox-min.js' => array(),
-    ),
-  );
+
   return $libraries;
 }
 

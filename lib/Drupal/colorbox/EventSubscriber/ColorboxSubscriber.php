@@ -86,7 +86,7 @@ class ColorboxSubscriber implements EventSubscriberInterface {
 
       // Add and initialise the Colorbox plugin.
       $variant = $config->get('advanced.compression_type');
-      drupal_add_library('colorbox', 'colorbox.' . $variant);
+      libraries_load('colorbox', $variant);
       drupal_add_js($path . '/js/colorbox.js');
 
       // Add JS and CSS based on selected style.

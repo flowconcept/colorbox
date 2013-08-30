@@ -4,3 +4,5 @@ description: 'A light-weight, customizable lightbox plugin for jQuery 1.4.3+.'
 core: 8.x
 configure: admin/config/media/colorbox
 package: Media
+dependencies:
+  - libraries

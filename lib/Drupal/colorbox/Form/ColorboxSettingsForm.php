@@ -33,7 +33,7 @@ class ColorboxSettingsForm extends SystemConfigFormBase {
 
     drupal_add_js(drupal_get_path('module', 'colorbox') . '/js/colorbox_admin_settings.js', array('preprocess' => FALSE));
 
-    // $library = libraries_detect('colorbox');
+    $library = libraries_detect('colorbox');
 
     if (module_exists('insert')) {
       $form['colorbox_insert_module'] = array(
@@ -83,11 +83,11 @@ class ColorboxSettingsForm extends SystemConfigFormBase {
       'default' => t('Default'),
       'plain' => t('Plain (mainly for images)'),
       'stockholmsyndrome' => t('Stockholm Syndrome'),
-      //$library['library path'] . '/example1' => t('Example 1'),
-      //$library['library path'] . '/example2' => t('Example 2'),
-      //$library['library path'] . '/example3' => t('Example 3'),
-      //$library['library path'] . '/example4' => t('Example 4'),
-      //$library['library path'] . '/example5' => t('Example 5'),
+      $library['library path'] . '/example1' => t('Example 1'),
+      $library['library path'] . '/example2' => t('Example 2'),
+      $library['library path'] . '/example3' => t('Example 3'),
+      $library['library path'] . '/example4' => t('Example 4'),
+      $library['library path'] . '/example5' => t('Example 5'),
       'none' => t('None'),
     );
     $form['colorbox_custom_settings']['colorbox_style'] = array(
