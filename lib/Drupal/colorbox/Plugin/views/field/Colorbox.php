@@ -178,7 +178,7 @@ If you would like to have the characters %5B and %5D please use the html entity 
 
     $width = $this->options['width'] ? $this->options['width'] : '';
     $height = $this->options['height'] ? $this->options['height'] : '';
-    $gallery_id = !empty($this->options['custom_gid']) ? $gallery : ($this->options['gid'] ? 'gallery-' . $this->view->name : '');
+    $gallery_id = !empty($this->options['custom_gid']) ? $gallery : ($this->options['gid'] ? 'gallery-' . $this->view->storage->id : '');
     $link_text = $tokens["[{$this->options['trigger_field']}]"];
     $link_options = array(
       'html' => TRUE,
