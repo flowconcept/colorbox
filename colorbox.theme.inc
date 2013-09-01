@@ -63,7 +63,8 @@ function theme_colorbox_image_formatter($variables) {
       $caption = $entity_title;
       break;
     case 'custom':
-      $caption = token_replace($settings['colorbox_caption_custom'], array($entity_type => $entity, 'file' => (object) $item), array('clear' => TRUE));
+      $token_service = \Drupal::token();
+      $caption = $token_service->replace($settings['colorbox_caption_custom'], array($entity_type => $entity, 'file' => (object) $item), array('clear' => TRUE));
       break;
     default:
       $caption = '';
