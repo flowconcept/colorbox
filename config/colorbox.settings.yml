@@ -30,7 +30,17 @@ advanced:
   caption_trim: '0'
   caption_trim_length: '75'
   visibility: '0'
-  pages: 'admin*\nimagebrowser*\nimg_assist*\nimce*\nnode/add/*\nnode/*/edit\nprint/*\nprintpdf/*\nsystem/ajax\nsystem/ajax/*'
+  pages:
+    - 'admin*'
+    - 'imagebrowser*'
+    - 'img_assist*'
+    - 'imce*'
+    - 'node/add/*'
+    - 'node/*/edit'
+    - 'print/*'
+    - 'printpdf/*'
+    - 'system/ajax'
+    - 'system/ajax/*'
   compression_type: 'minified'
 insert:
   image_style: ''

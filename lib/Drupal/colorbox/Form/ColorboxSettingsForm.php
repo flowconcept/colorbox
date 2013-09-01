@@ -318,7 +318,7 @@ class ColorboxSettingsForm extends SystemConfigFormBase {
     $form['colorbox_advanced_settings']['colorbox_pages'] = array(
       '#type' => 'textarea',
       '#title' => '<span class="element-invisible">' . t('Pages') . '</span>',
-      '#default_value' => $config->get('advanced.pages'),
+      '#default_value' => _colorbox_array_to_string_textarea($config->get('advanced.pages')),
       '#description' => t("Specify pages by using their paths. Enter one path per line. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page.", array('%blog' => 'blog', '%blog-wildcard' => 'blog/*', '%front' => '<front>')),
     );
     $form['colorbox_advanced_settings']['colorbox_compression_type'] = array(
@@ -373,7 +373,7 @@ class ColorboxSettingsForm extends SystemConfigFormBase {
       ->set('advanced.caption_trim', $form_values['colorbox_caption_trim'])
       ->set('advanced.caption_trim_length', $form_values['colorbox_caption_trim_length'])
       ->set('advanced.visibility', $form_values['colorbox_visibility'])
-      ->set('advanced.pages', $form_values['colorbox_pages'])
+      ->set('advanced.pages', _colorbox_string_textarea_to_array($form_values['colorbox_pages']))
       ->set('advanced.compression_type', $form_values['colorbox_compression_type']);
 
     if (isset($form_values['colorbox_image_style'])) {

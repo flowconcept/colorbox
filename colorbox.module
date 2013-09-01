@@ -123,7 +123,7 @@ function _colorbox_active() {
   // Code from the block_list funtion in block.module.
 
   $path = Drupal::service('path.alias_manager.cached')->getPathAlias($current_path);
-  $colorbox_pages = $config->get('colorbox_pages');
+  $colorbox_pages = _colorbox_array_to_string_textarea($config->get('advanced.pages'));
   // Compare with the internal and path alias (if any).
   $page_match = drupal_match_path($path, $colorbox_pages);
   if ($path != $current_path) {
@@ -162,4 +162,25 @@ function colorbox_insert_content($item, $style, $widget) {
  */
 function colorbox_gallery_exists() {
   return FALSE;
+}
+
+/**
+ * Converts a text with lines (\n) into an array of lines.
+ *
+ * @return
+ *   Array with as many items as non-empty lines in the text
+ */
+function _colorbox_string_textarea_to_array($text) {
+  $text = str_replace("\r\n", "\n", $text);
+  return array_filter(explode("\n", $text), 'trim');
+}
+
+/**
+ * Converts an array of lines into an text with lines (\n).
+ *
+ * @return
+ *   Text with lines
+ */
+function _colorbox_array_to_string_textarea($array) {
+  return implode("\r\n", $array);
 }

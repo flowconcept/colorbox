@@ -100,8 +100,11 @@ colorbox.settings:
           type: integer
           label: 'Show Colorbox on specific pages'
         pages:
-          type: string
+          type: sequence
           label: 'Pages'
+          sequence:
+            - type: string
+              label: 'Page'
         compression_type:
           type: string
           label: 'Colorbox compression level'

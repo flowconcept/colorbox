@@ -157,11 +157,20 @@ function colorbox_update_8000() {
       'colorbox_caption_trim' => 'advanced.caption_trim',
       'colorbox_caption_trim_length' => 'advanced.caption_trim_length',
       'colorbox_visibility' => 'advanced.visibility',
-      'colorbox_pages' => 'advanced.pages',
       'colorbox_compression_type' => 'advanced.compression_type',
       'colorbox_image_style' => 'insert.image_style',
       'colorbox_insert_gallery' => 'insert.insert_gallery',
     )
   );
+  $sql = db_select('variable', 'v')
+    ->fields('v', array('value'))
+    ->condition('name', 'colorbox_pages')
+    ->execute();
+  if ($row = $sql->fetchAssoc()) {
+    $val = unserialize($row['value']);
+    $pages = _colorbox_string_textarea_to_array($val);
+    $conf = config('colorbox.settings');
+    $conf->set('advanced.pages', $pages);
+  }
 
 }
