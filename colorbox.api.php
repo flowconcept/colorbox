@@ -23,7 +23,7 @@ function hook_colorbox_settings_alter(&$settings, &$style) {
   $settings['scalePhotos'] = FALSE;
 
   // Use custom style plugin specifically for node/123.
-  if ($_GET['q'] == 'node/123') {
+  if (current_path() == 'node/123') {
     $style = 'mystyle';
   }
 }
