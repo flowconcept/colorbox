@@ -1,5 +1,6 @@
 services:
   colorbox.subscriber:
     class: Drupal\colorbox\EventSubscriber\ColorboxSubscriber
+    arguments: ['@module_handler']
     tags:
       - { name: event_subscriber }

@@ -11,11 +11,29 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * KernelEvents::REQUEST subscriber for colorbox loading.
  */
 class ColorboxSubscriber implements EventSubscriberInterface {
+
+  /**
+   * The The module handler used to hook altering.
+   *
+   * @var Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $module_handler;
+
+  /**
+   * Construct the ColorboxSubscriber.
+   *
+   * @param Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler used to hook altering.
+   */
+  public function __construct(ModuleHandlerInterface $module_handler) {
+    $this->module_handler = $module_handler;
+  }
 
   /**
    * Loads Colorbox library.
@@ -80,7 +98,7 @@ class ColorboxSubscriber implements EventSubscriberInterface {
 
       // Give other modules the possibility to override Colorbox settings and style.
       $data = &$js_settings;
-      drupal_alter('colorbox_settings', $data, $style);
+      $this->module_handler->alter('colorbox_settings', $data, $style);
 
       drupal_add_js(array('colorbox' => $js_settings), array('type' => 'setting', 'scope' => JS_DEFAULT));
 
