@@ -117,35 +117,16 @@ class ColorboxFormatter extends FormatterBase {
         ),
       ),
     );
-    // Allow users to hide or set a custom recursion limit.
-    // The module token_tweaks sets a global recursion limit that can not be bypassed.
-    if (module_exists('token') && $recursion_limit = min(variable_get('token_tree_recursion_limit', 3), variable_get('colorbox_token_recursion_limit', 3))) {
-      $element['colorbox_token'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Replacement patterns'),
-        '#theme' => 'token_tree',
-        '#token_types' => array($instance['entity_type'], 'file'),
-        '#recursion_limit' => $recursion_limit,
-        '#dialog' => TRUE,
-        '#states' => array(
-          'visible' => array(
-            ':input[name$="[settings_edit_form][settings][colorbox_caption]"]' => array('value' => 'custom'),
-          ),
+    $element['colorbox_token'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Replacement patterns'),
+      '#description' => '<strong class="error">' . t('For token support the <a href="@token_url">token module</a> must be installed.', array('@token_url' => 'http://drupal.org/project/token')) . '</strong>',
+      '#states' => array(
+        'visible' => array(
+          ':input[name$="[settings_edit_form][settings][colorbox_caption]"]' => array('value' => 'custom'),
         ),
-      );
-    }
-    else {
-      $element['colorbox_token'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Replacement patterns'),
-        '#description' => '<strong class="error">' . t('For token support the <a href="@token_url">token module</a> must be installed.', array('@token_url' => 'http://drupal.org/project/token')) . '</strong>',
-        '#states' => array(
-          'visible' => array(
-            ':input[name$="[settings_edit_form][settings][colorbox_caption]"]' => array('value' => 'custom'),
-          ),
-        ),
-      );
-    }
+      ),
+    );
 
     return $element;
   }
