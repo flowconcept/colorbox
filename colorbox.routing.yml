@@ -1,6 +1,7 @@
-colorbox_settings:
-  pattern: '/admin/config/media/colorbox'
+colorbox.settings:
+  path: '/admin/config/media/colorbox'
   defaults:
-    _form: 'Drupal\colorbox\Form\ColorboxSettingsForm'
+    _title: 'Colorbox'
+    _form: '\Drupal\colorbox\Form\ColorboxSettingsForm'
   requirements:
     _permission: 'administer site configuration'

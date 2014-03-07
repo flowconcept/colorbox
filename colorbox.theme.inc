@@ -17,36 +17,32 @@
  * @ingroup themeable
  */
 function theme_colorbox_image_formatter($variables) {
-  $item = $variables['item'];
-  $entity_type = $variables['entity_type'];
-  $entity = $variables['entity'];
-  $field = $variables['field'];
-  $settings = $variables['display_settings'];
 
   $image = array(
-    'uri' => $item['entity']->getFileUri(),
-    'alt' => isset($item['alt']) ? $item['alt'] : '',
-    'title' => isset($item['title']) ? $item['title'] : '',
-    'style_name' => $settings['colorbox_node_style'],
+    'uri' => $variables['image']->entity->getFileUri(),
+    'alt' => $variables['image']->alt,
+    'title' => $variables['image']->title,
+    'style_name' => $variables['settings']['colorbox_node_style'],
   );
 
-  if (isset($item['width']) && isset($item['height'])) {
-    $image['width'] = $item['width'];
-    $image['height'] = $item['height'];
-  }
+  //FFFif (isset($item['width']) && isset($item['height'])) {
+    //FFF$image['width'] = $item['width'];
+    //FFF$image['height'] = $item['height'];
+  //FFF}
 
-  $entity_title = $entity->label();
+  $entity_title = $variables['image']->getEntity()->label();
+  $entity_type = $variables['entity']->entityType();
 
-  switch ($settings['colorbox_caption']) {
+  switch ($variables['settings']['colorbox_caption']) {
      case 'auto':
       // If the title is empty use alt or the entity title in that order.
-      if (!empty($image['title'])) {
-        $caption = $image['title'];
+      if ($variables['image']->title) {
+        $caption = $variables['image']->title;
       }
-      elseif (!empty($image['alt'])) {
-        $caption = $image['alt'];
+      elseif ($variables['image']->alt) {
+        $caption = $variables['image']->alt;
       }
-      elseif (!empty($entity_title)) {
+      elseif ($entity_title) {
         $caption = $entity_title;
       }
       else {
@@ -54,17 +50,23 @@ function theme_colorbox_image_formatter($variables) {
       }
       break;
     case 'title':
-      $caption = $image['title'];
+      $caption = $variables['image']->title;
       break;
     case 'alt':
-      $caption = $image['alt'];
+      $caption = $variables['image']->alt;
       break;
     case 'node_title':
       $caption = $entity_title;
       break;
     case 'custom':
       $token_service = \Drupal::token();
-      $caption = $token_service->replace($settings['colorbox_caption_custom'], array($entity_type => $entity, 'file' => (object) $item), array('clear' => TRUE));
+      $caption = $token_service->replace(
+        $variables['settings']['colorbox_caption_custom'],
+        array(
+          $entity_type => $variables['entity'],
+          'file' => $variables['image']),
+          array('clear' => TRUE)
+        );
       break;
     default:
       $caption = '';
@@ -78,10 +80,11 @@ function theme_colorbox_image_formatter($variables) {
   }
 
   // Build the gallery id.
-  $id = $entity->id();
-  $bundle = $entity->bundle();
-  $entity_id = !empty($id) ? $entity_type . '-' . $id : 'entity-id';
-  switch ($settings['colorbox_gallery']) {
+  $id = $variables['entity']->id();
+  $entity_bundle = $variables['entity']->getType();
+  $entity_id = !empty($id) ? $entity_bundle . '-' . $id : 'entity-id';
+  $field = $variables['image']->getParent()->getName();
+  switch ($variables['settings']['colorbox_gallery']) {
     case 'post':
       $gallery_id = 'gallery-' . $entity_id;
       break;
@@ -89,20 +92,28 @@ function theme_colorbox_image_formatter($variables) {
       $gallery_id = 'gallery-all';
       break;
     case 'field_post':
-      $gallery_id = 'gallery-' . $entity_id . '-' . $field->getFieldName();
+      $gallery_id = 'gallery-' . $entity_id . '-' . $field;
       break;
     case 'field_page':
-      $gallery_id = 'gallery-' . $field->getFieldName();
+      $gallery_id = 'gallery-' . $field;
       break;
     case 'custom':
-      $gallery_id = $settings['colorbox_gallery_custom'];
+      $token_service = \Drupal::token();
+      $gallery_id = $token_service->replace(
+        $variables['settings']['colorbox_gallery_custom'],
+        array(
+          $entity_type => $variables['entity'],
+          'file' => $variables['image']),
+          array('clear' => TRUE)
+        );
       break;
     default:
       $gallery_id = '';
   }
 
-  if ($style_name = $settings['colorbox_image_style']) {
-    $path = image_style_url($style_name, $image['uri']);
+  if ($style_name = $variables['settings']['colorbox_image_style']) {
+    $style = entity_load('image_style', $style_name);
+    $path = $style->buildUrl($image['uri']);
   }
   else {
     $path = file_create_url($image['uri']);
@@ -150,7 +161,7 @@ function theme_colorbox_imagefield($variables) {
 }
 
 /**
- * Preprocess variables for the colorbox-insert-image.tpl.php file.
+ * Preprocess variables for the colorbox-insert-image.html.twig file.
  */
 function template_preprocess_colorbox_insert_image(&$variables) {
   $class = array();

@@ -10,6 +10,7 @@ namespace Drupal\colorbox\Plugin\views\field;
 use Drupal\Component\Annotation\PluginID;
 use Drupal\Core\Annotation\Translation;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
+use Drupal\views\ResultRow;
 
 /**
  * A handler to provide a field that is completely custom by the administrator.
@@ -150,11 +151,18 @@ If you would like to have the characters %5B and %5D please use the html entity 
   /**
    * Render the trigger field and its linked popup information.
    */
-  function render($values) {
+  function render(ResultRow $values) {
     $config = config('colorbox.settings');
     // Load the necessary js file for Colorbox activation.
     if (_colorbox_active() && !$config->get('extra.inline')) {
-      drupal_add_js(drupal_get_path('module', 'colorbox') . '/js/colorbox_inline.js');
+      $conf_js = array(
+        '#attached' => array(
+          'js' => array(
+            drupal_get_path('module', 'colorbox') . '/js/colorbox_inline.js' => array(),
+          ),
+        ),
+      );
+      drupal_render($conf_js);
     }
 
     // We need to have multiple unique IDs, one for each record.

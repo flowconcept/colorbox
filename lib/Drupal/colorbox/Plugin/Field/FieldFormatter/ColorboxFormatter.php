@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \Drupal\colorbox\Plugin\field\formatter\ColorboxFormatter.
+ * Contains \Drupal\colorbox\Plugin\Field\FieldFormatter\ColorboxFormatter.
  */
 
-namespace Drupal\colorbox\Plugin\field\formatter;
+namespace Drupal\colorbox\Plugin\Field\FieldFormatter;
 
 use Drupal\field\Annotation\FieldFormatter;
 use Drupal\Core\Annotation\Translation;
-use Drupal\field\Plugin\Type\Formatter\FormatterBase;
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FormatterBase;
+use Drupal\Core\Field\FieldItemListInterface;
 
 /**
  * Plugin implementation of the 'colorbox' formatter.
@@ -76,15 +76,20 @@ class ColorboxFormatter extends FormatterBase {
     );
     $element['colorbox_gallery_custom'] = array(
       '#title' => t('Custom gallery'),
-      '#type' => 'machine_name',
-      '#maxlength' => 32,
+      '#type' => 'textfield',
       '#default_value' => $this->getSetting('colorbox_gallery_custom'),
-      '#description' => t('All images on a page with the same gallery value (rel attribute) will be grouped together. It must only contain lowercase letters, numbers, and underscores.'),
+      '#description' => t('All images on a page with the same gallery value (rel attribute) will be grouped together.'),
       '#required' => FALSE,
-      '#machine_name' => array(
-        'exists' => 'colorbox_gallery_exists',
-        'error' => t('The custom gallery field must only contain lowercase letters, numbers, and underscores.'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name$="[settings_edit_form][settings][colorbox_gallery]"]' => array('value' => 'custom'),
+        ),
       ),
+    );
+    $element['colorbox_token_gallery'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Replacement patterns'),
+      '#description' => '<strong class="error">' . t('For token support the <a href="@token_url">token module</a> must be installed.', array('@token_url' => 'http://drupal.org/project/token')) . '</strong>',
       '#states' => array(
         'visible' => array(
           ':input[name$="[settings_edit_form][settings][colorbox_gallery]"]' => array('value' => 'custom'),
@@ -117,7 +122,7 @@ class ColorboxFormatter extends FormatterBase {
         ),
       ),
     );
-    $element['colorbox_token'] = array(
+    $element['colorbox_token_caption'] = array(
       '#type' => 'fieldset',
       '#title' => t('Replacement patterns'),
       '#description' => '<strong class="error">' . t('For token support the <a href="@token_url">token module</a> must be installed.', array('@token_url' => 'http://drupal.org/project/token')) . '</strong>',
@@ -190,20 +195,19 @@ class ColorboxFormatter extends FormatterBase {
   /**
    * {@inheritdoc}
    */
-  public function viewElements(EntityInterface $entity, $langcode, array $items) {
+  public function viewElements(FieldItemListInterface $items) {
     $element = array();
     $index = $this->getSetting('colorbox_multivalue_index');
+    $entity = $items->getEntity();
+    $settings = $this->getSettings();
 
     foreach ($items as $delta => $item) {
       if ($index === NULL || $index === '' || $index === $delta) {
         $element[$delta] = array(
           '#theme' => 'colorbox_image_formatter',
-          '#item' => $item,
-          '#entity_type' => $entity->getType(),
+          '#image' => $item,
           '#entity' => $entity,
-          '#node' => $entity, // Left for legacy support.
-          '#field' => $this->fieldDefinition,
-          '#display_settings' => $this->getSettings(),
+          '#settings' => $settings,
         );
       }
     }

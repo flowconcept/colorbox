@@ -7,14 +7,14 @@
 
 namespace Drupal\colorbox\Form;
 
-use Drupal\system\SystemConfigFormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Config\ConfigFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * General configuration form for controlling the colorbox behaviour..
  */
-class ColorboxSettingsForm extends SystemConfigFormBase {
+class ColorboxSettingsForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
@@ -31,7 +31,14 @@ class ColorboxSettingsForm extends SystemConfigFormBase {
   	// Get all settings
   	$config = $this->configFactory->get('colorbox.settings');
 
-    drupal_add_js(drupal_get_path('module', 'colorbox') . '/js/colorbox_admin_settings.js', array('preprocess' => FALSE));
+    $conf_js = array(
+      '#attached' => array(
+        'js' => array(
+          drupal_get_path('module', 'colorbox') . '/js/colorbox_admin_settings.js' => array('preprocess' => FALSE),
+        ),
+      ),
+    );
+    drupal_render($conf_js);
 
     $library = libraries_detect('colorbox');
 

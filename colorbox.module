@@ -37,13 +37,9 @@ function colorbox_theme() {
 
     'colorbox_image_formatter' => array(
       'variables' => array(
-        'item' => NULL,
-        'entity_type' => NULL,
+        'image' => NULL,
         'entity' => NULL,
-        'node' => NULL,  // Left for legacy support.
-        'field' => array(),
-        'path' => drupal_get_path('module', 'colorbox') . '/templates',
-        'display_settings' => array(),
+        'settings' => NULL,
       ),
       'file' => 'colorbox.theme.inc',
     ),
@@ -95,10 +91,10 @@ function colorbox_libraries_info() {
 function colorbox_menu() {
   $items = array();
 
-  $items['colorbox_settings'] = array(
+  $items['colorbox.settings'] = array(
     'title' => 'Colorbox',
     'description' => 'Adjust Colorbox settings.',
-    'route_name' => 'colorbox_settings',
+    'route_name' => 'colorbox.settings',
   );
 
   return $items;
@@ -117,7 +113,7 @@ function _colorbox_active() {
     return FALSE;
   }
 
-  $config = config('colorbox.settings');
+  $config = \Drupal::config('colorbox.settings');
 
   $current_path = current_path();
   // Code from the block_list funtion in block.module.

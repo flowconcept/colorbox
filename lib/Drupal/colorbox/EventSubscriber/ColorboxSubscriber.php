@@ -42,7 +42,7 @@ class ColorboxSubscriber implements EventSubscriberInterface {
    *   The Event to process.
    */
   public function colorboxLoadLibrary(GetResponseEvent $event) {
-    $config = config('colorbox.settings');
+    $config = \Drupal::config('colorbox.settings');
     if (!drupal_installation_attempted()) {
       static $already_added = FALSE;
       if ($already_added) {
@@ -100,12 +100,29 @@ class ColorboxSubscriber implements EventSubscriberInterface {
       $data = &$js_settings;
       $this->module_handler->alter('colorbox_settings', $data, $style);
 
-      drupal_add_js(array('colorbox' => $js_settings), array('type' => 'setting', 'scope' => JS_DEFAULT));
+      $settings = array(
+        '#attached' => array(
+          'js' => array(
+            array(
+              'data' => array('colorbox' => $js_settings),
+              'type' => 'setting',
+            ),
+          ),
+        ),
+      );
+      drupal_render($settings);
 
       // Add and initialise the Colorbox plugin.
       $variant = $config->get('advanced.compression_type');
       libraries_load('colorbox', $variant);
-      drupal_add_js($path . '/js/colorbox.js');
+      $colorbox = array(
+        '#attached' => array(
+          'js' => array(
+            $path . '/js/colorbox.js' => array(),
+          ),
+        ),
+      );
+      drupal_render($colorbox);
 
       // Add JS and CSS based on selected style.
       switch ($style) {
@@ -114,19 +131,49 @@ class ColorboxSubscriber implements EventSubscriberInterface {
         case 'default':
         case 'plain':
         case 'stockholmsyndrome':
-          drupal_add_css($path . '/styles/' . $style . '/colorbox_style.css');
-          drupal_add_js($path . '/styles/' . $style . '/colorbox_style.js');
+          $style_render = array(
+            '#attached' => array(
+              'css' => array(
+                $path . '/styles/' . $style . '/colorbox_style.css' => array(),
+              ),
+              'js' => array(
+                $path . '/styles/' . $style . '/colorbox_style.js' => array(),
+              ),
+            ),
+          );
+          drupal_render($style_render);
           break;
         default:
-          drupal_add_css($style . '/colorbox.css');
+          $style_render = array(
+            '#attached' => array(
+              'css' => array(
+                $path . '/styles/' . $style . '/colorbox.css' => array(),
+              ),
+            ),
+          );
+          drupal_render($style_render);
       }
 
       if ($config->get('extra.load', 0)) {
-        drupal_add_js($path . '/js/colorbox_load.js');
+        $load = array(
+          '#attached' => array(
+            'js' => array(
+              $path . '/js/colorbox_load.js' => array(),
+            ),
+          ),
+        );
+        drupal_render($load);
       }
 
       if ($config->get('extra.inline', 0)) {
-        drupal_add_js($path . '/js/colorbox_inline.js');
+        $inline = array(
+          '#attached' => array(
+            'js' => array(
+              $path . '/js/colorbox_inline.js' => array(),
+            ),
+          ),
+        );
+        drupal_render($inline);
       }
 
       $already_added = TRUE;
