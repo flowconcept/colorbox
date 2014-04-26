@@ -16,28 +16,9 @@ define('COLORBOX_MIN_PLUGIN_VERSION', '1.3.21.1');
  */
 function colorbox_theme() {
   return array(
-    'colorbox_imagefield' => array(
-      'variables' => array(
-        'image' => array(),
-        'path' => NULL,
-        'title' => NULL,
-        'gid' => NULL,
-      ),
-      'file' => 'colorbox.theme.inc',
-    ),
-
-    'colorbox_insert_image' => array(
+    'colorbox_formatter' => array(
       'variables' => array(
         'item' => NULL,
-        'widget' => NULL,
-      ),
-      'template' => 'colorbox-insert-image',
-      'file' => 'colorbox.theme.inc',
-    ),
-
-    'colorbox_image_formatter' => array(
-      'variables' => array(
-        'image' => NULL,
         'entity' => NULL,
         'settings' => NULL,
       ),
@@ -86,21 +67,6 @@ function colorbox_libraries_info() {
 }
 
 /**
- * Implements hook_menu().
- */
-function colorbox_menu() {
-  $items = array();
-
-  $items['colorbox.settings'] = array(
-    'title' => 'Colorbox',
-    'description' => 'Adjust Colorbox settings.',
-    'route_name' => 'colorbox.settings',
-  );
-
-  return $items;
-}
-
-/**
  * Check if Colorbox should be active for the current URL.
  *
  * @return
@@ -113,51 +79,24 @@ function _colorbox_active() {
     return FALSE;
   }
 
+  // Assume there are no matches until one is found.
+  $page_match = FALSE;
+
+  // Convert path to lowercase. This allows comparison of the same path
+  // with different case. Ex: /Page, /page, /PAGE.
   $config = \Drupal::config('colorbox.settings');
+  $pages = drupal_strtolower(_colorbox_array_to_string($config->get('advanced.pages')));
 
-  $current_path = current_path();
-  // Code from the block_list funtion in block.module.
-
-  $path = Drupal::service('path.alias_manager.cached')->getPathAlias($current_path);
-  $colorbox_pages = _colorbox_array_to_string_textarea($config->get('advanced.pages'));
-  // Compare with the internal and path alias (if any).
-  $page_match = drupal_match_path($path, $colorbox_pages);
-  if ($path != $current_path) {
-    $page_match = $page_match || drupal_match_path($current_path, $colorbox_pages);
+  // Compare the lowercase path alias (if any) and internal path.
+  $path = current_path();
+  $path_alias = drupal_strtolower(\Drupal::service('path.alias_manager.cached')->getPathAlias($path));
+  $page_match = drupal_match_path($path_alias, $pages);
+  if ($path_alias != $path) {
+    $page_match = $page_match || drupal_match_path($path, $pages);
   }
   $page_match = $config->get('advanced.visibility') == 0 ? !$page_match : $page_match;
 
   return $page_match;
-}
-
-/**
- * Implements hook_insert_styles().
- */
-function colorbox_insert_styles() {
-  $insert_styles = array();
-  foreach (image_styles() as $key => $style) {
-    $insert_styles['colorbox__' . $key] = array('label' => t('Colorbox @style', array('@style' => $style['name'])));
-  }
-
-  return $insert_styles;
-}
-
-/**
- * Implements hook_insert_content().
- */
-function colorbox_insert_content($item, $style, $widget) {
-  list($item['module_name'], $item['style_name']) = explode('__', $style['name'], 2);
-  return theme('colorbox_insert_image', array('item' => $item, 'widget' => $widget));
-}
-
-/**
- * Machine names normally need to be unique but that does not apply to galleries.
- *
- * @return
- *   Always FALSE
- */
-function colorbox_gallery_exists() {
-  return FALSE;
 }
 
 /**
@@ -166,7 +105,7 @@ function colorbox_gallery_exists() {
  * @return
  *   Array with as many items as non-empty lines in the text
  */
-function _colorbox_string_textarea_to_array($text) {
+function _colorbox_string_to_array($text) {
   $text = str_replace("\r\n", "\n", $text);
   return array_filter(explode("\n", $text), 'trim');
 }
@@ -177,6 +116,6 @@ function _colorbox_string_textarea_to_array($text) {
  * @return
  *   Text with lines
  */
-function _colorbox_array_to_string_textarea($array) {
+function _colorbox_array_to_string($array) {
   return implode("\r\n", $array);
 }

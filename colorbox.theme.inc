@@ -16,33 +16,26 @@
  *
  * @ingroup themeable
  */
-function theme_colorbox_image_formatter($variables) {
+function theme_colorbox_formatter($variables) {
+  $item = $variables['item'];
+  $entity = $variables['entity'];
+  $settings = $variables['settings'];
+  $entity_title = $entity->label();
+  $id = $entity->id();
+  $entity_type = $entity->bundle();
+  $entity_id = !empty($id) ? $entity_type . '-' . $id : 'entity-id';
+  $field_name = $item->getParent()->getName();
 
-  $image = array(
-    'uri' => $variables['image']->entity->getFileUri(),
-    'alt' => $variables['image']->alt,
-    'title' => $variables['image']->title,
-    'style_name' => $variables['settings']['colorbox_node_style'],
-  );
-
-  //FFFif (isset($item['width']) && isset($item['height'])) {
-    //FFF$image['width'] = $item['width'];
-    //FFF$image['height'] = $item['height'];
-  //FFF}
-
-  $entity_title = $variables['image']->getEntity()->label();
-  $entity_type = $variables['entity']->entityType();
-
-  switch ($variables['settings']['colorbox_caption']) {
+  switch ($settings['colorbox_caption']) {
      case 'auto':
       // If the title is empty use alt or the entity title in that order.
-      if ($variables['image']->title) {
-        $caption = $variables['image']->title;
+      if (!empty($item->title)) {
+        $caption = $item->title;
       }
-      elseif ($variables['image']->alt) {
-        $caption = $variables['image']->alt;
+      elseif (!empty($item->alt)) {
+        $caption = $item->alt;
       }
-      elseif ($entity_title) {
+      elseif (!empty($entity_title)) {
         $caption = $entity_title;
       }
       else {
@@ -50,41 +43,32 @@ function theme_colorbox_image_formatter($variables) {
       }
       break;
     case 'title':
-      $caption = $variables['image']->title;
+      $caption = $item->title;
       break;
     case 'alt':
-      $caption = $variables['image']->alt;
+      $caption = $item->alt;
       break;
-    case 'node_title':
+    case 'entity_title':
       $caption = $entity_title;
       break;
     case 'custom':
       $token_service = \Drupal::token();
-      $caption = $token_service->replace(
-        $variables['settings']['colorbox_caption_custom'],
-        array(
-          $entity_type => $variables['entity'],
-          'file' => $variables['image']),
-          array('clear' => TRUE)
-        );
+      $caption = $token_service->replace($settings['colorbox_caption_custom'], array($entity_type => $entity, 'file' => $item), array('clear' => TRUE));
       break;
     default:
       $caption = '';
   }
 
   // Shorten the caption for the example styles or when caption shortening is active.
-  $colorbox_style = variable_get('colorbox_style', 'default');
-  $trim_length = variable_get('colorbox_caption_trim_length', 75);
-  if (((strpos($colorbox_style, 'colorbox/example') !== FALSE) || variable_get('colorbox_caption_trim', 0)) && (drupal_strlen($caption) > $trim_length)) {
+  $config = \Drupal::config('colorbox.settings');
+  $colorbox_style = $config->get('colorbox_style');
+  $trim_length = $config->get('colorbox_caption_trim_length');
+  if (((strpos($colorbox_style, 'colorbox/example') !== FALSE) || $config->get('colorbox_caption_trim')) && (drupal_strlen($caption) > $trim_length)) {
     $caption = drupal_substr($caption, 0, $trim_length - 5) . '...';
   }
 
   // Build the gallery id.
-  $id = $variables['entity']->id();
-  $entity_bundle = $variables['entity']->getType();
-  $entity_id = !empty($id) ? $entity_bundle . '-' . $id : 'entity-id';
-  $field = $variables['image']->getParent()->getName();
-  switch ($variables['settings']['colorbox_gallery']) {
+  switch ($settings['colorbox_gallery']) {
     case 'post':
       $gallery_id = 'gallery-' . $entity_id;
       break;
@@ -92,110 +76,56 @@ function theme_colorbox_image_formatter($variables) {
       $gallery_id = 'gallery-all';
       break;
     case 'field_post':
-      $gallery_id = 'gallery-' . $entity_id . '-' . $field;
+      $gallery_id = 'gallery-' . $entity_id . '-' . $field_name;
       break;
     case 'field_page':
-      $gallery_id = 'gallery-' . $field;
+      $gallery_id = 'gallery-' . $field_name;
       break;
     case 'custom':
       $token_service = \Drupal::token();
-      $gallery_id = $token_service->replace(
-        $variables['settings']['colorbox_gallery_custom'],
-        array(
-          $entity_type => $variables['entity'],
-          'file' => $variables['image']),
-          array('clear' => TRUE)
-        );
+      $gallery_id = $token_service->replace($settings['colorbox_gallery_custom'], array($entity_type => $entity, 'file' => $item), array('clear' => TRUE));
       break;
     default:
       $gallery_id = '';
   }
 
-  if ($style_name = $variables['settings']['colorbox_image_style']) {
-    $style = entity_load('image_style', $style_name);
-    $path = $style->buildUrl($image['uri']);
+  $img_uri = $item->entity->getFileUri();
+  if (!empty$settings['colorbox_image_style'])) {
+    $style = entity_load('image_style', $settings['colorbox_image_style']);
+    $path = $style->buildUrl($img_uri);
   }
   else {
-    $path = file_create_url($image['uri']);
+    $path = file_create_url($img_uri);
   }
 
-  return theme('colorbox_imagefield', array('image' => $image, 'path' => $path, 'title' => $caption, 'gid' => $gallery_id));
-}
+  // Extract field item attributes for the theme function, and unset them
+  // from the $item so that the field template does not re-render them.
+  $item_attributes = $item->_attributes;
+  unset($item->_attributes);
 
-/**
- * Returns HTML for an image using a specific Colorbox image style.
- *
- * @param $variables
- *   An associative array containing:
- *   - image: image item as array.
- *   - path: The path of the image that should be displayed in the Colorbox.
- *   - title: The title text that will be used as a caption in the Colorbox.
- *   - gid: Gallery id for Colorbox image grouping.
- *
- * @ingroup themeable
- */
-function theme_colorbox_imagefield($variables) {
   $class = array('colorbox');
 
-  if ($variables['image']['style_name'] == 'hide') {
-    $image = '';
+  if ($settings['colorbox_node_style'] == 'hide') {
+    $item = NULL;
     $class[] = 'js-hide';
   }
-  elseif (!empty($variables['image']['style_name'])) {
-    $image = theme('image_style', $variables['image']);
-  }
-  else {
-    $image = theme('image', $variables['image']);
-  }
 
-  $options = array(
-    'html' => TRUE,
+  $link_attributes = array(
     'attributes' => array(
-      'title' => $variables['title'],
+      'title' => $caption,
       'class' => $class,
-      'rel' => $variables['gid'],
-    )
+      'rel' => $gallery_id,
+    ),
+  );
+  $link = array('path' => $path, 'options' => $link_attributes);
+
+  $build = array(
+    '#theme' => 'image_formatter',
+    '#item' => $item,
+    '#item_attributes' => $item_attributes,
+    '#image_style' => $settings['colorbox_node_style'],
+    '#path' => $link,
   );
 
-  return l($image, $variables['path'], $options);
-}
-
-/**
- * Preprocess variables for the colorbox-insert-image.html.twig file.
- */
-function template_preprocess_colorbox_insert_image(&$variables) {
-  $class = array();
-  $file = file_load($variables['item']['fid']);
-
-  if (!empty($variables['widget']['settings']['insert_class'])) {
-    $class = explode(' ', $variables['widget']['settings']['insert_class']);
-  }
-  $class[] = 'image-' . $variables['item']['style_name'];
-
-  foreach ($class as $key => $value) {
-    $class[$key] = drupal_html_class($value);
-  }
-
-  $variables['image_path'] = image_style_url($variables['item']['style_name'], $file->uri);
-
-  if ($style_name = variable_get('colorbox_image_style', '')) {
-    $variables['link_path'] = image_style_url($style_name, $file->uri);
-  }
-  else {
-    $variables['link_path'] = file_create_url($file->uri);
-  }
-
-  $variables['class'] = implode(' ', $class);
-
-  $variables['gallery_id'] = '';
-  switch (variable_get('colorbox_insert_gallery', 0)) {
-    case 0:
-    case 1:
-    case 2:
-      $variables['gallery_id'] = 'gallery-all';
-      break;
-    case 3:
-      $variables['gallery_id'] = '';
-      break;
-  }
+  return drupal_render($build);
 }
