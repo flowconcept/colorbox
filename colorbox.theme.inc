@@ -106,7 +106,6 @@ function theme_colorbox_formatter($variables) {
   $class = array('colorbox');
 
   if ($settings['colorbox_node_style'] == 'hide') {
-    $item = NULL;
     $class[] = 'js-hide';
   }
 
