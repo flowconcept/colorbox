@@ -90,7 +90,7 @@ function theme_colorbox_formatter($variables) {
   }
 
   $img_uri = $item->entity->getFileUri();
-  if (!empty$settings['colorbox_image_style'])) {
+  if (!empty($settings['colorbox_image_style'])) {
     $style = entity_load('image_style', $settings['colorbox_image_style']);
     $path = $style->buildUrl($img_uri);
   }
