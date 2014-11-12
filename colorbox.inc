@@ -5,26 +5,32 @@
  * Colorbox theme functions.
  */
 
+use Drupal\Core\Template\Attribute;
+
 /**
- * Returns HTML for an Colorbox image field formatter.
+ * Prepares variables for colorbox formatter templates.
  *
- * @param $variables
+ * Default template: colorbox-formatter.html.twig.
+ *
+ * @param array $variables
  *   An associative array containing:
- *   - item: An array of image data.
- *   - image_style: An optional image style.
- *   - path: An array containing the link 'path' and link 'options'.
- *
- * @ingroup themeable
+ *   - item: An ImageItem object.
+ *   - item_attributes: An optional associative array of html attributes to be
+ *     placed in the img tag.
+ *   - entity: An entity object.
+ *   - settings: Formatter settings array.
  */
-function theme_colorbox_formatter($variables) {
+function template_preprocess_colorbox_formatter(&$variables) {
   $item = $variables['item'];
+  $item_attributes = isset($variables['item_attributes']) ? $variables['item_attributes'] : array();
+
   $entity = $variables['entity'];
   $settings = $variables['settings'];
+  $variables = array(); // Reset the $variables parameter.
+
+  // Build the caption.
   $entity_title = $entity->label();
-  $id = $entity->id();
   $entity_type = $entity->bundle();
-  $entity_id = !empty($id) ? $entity_type . '-' . $id : 'entity-id';
-  $field_name = $item->getParent()->getName();
 
   switch ($settings['colorbox_caption']) {
      case 'auto':
@@ -68,6 +74,10 @@ function theme_colorbox_formatter($variables) {
   }
 
   // Build the gallery id.
+  $id = $entity->id();
+  $entity_id = !empty($id) ? $entity_type . '-' . $id : 'entity-id';
+  $field_name = $item->getParent()->getName();
+
   switch ($settings['colorbox_gallery']) {
     case 'post':
       $gallery_id = 'gallery-' . $entity_id;
@@ -89,42 +99,46 @@ function theme_colorbox_formatter($variables) {
       $gallery_id = '';
   }
 
-  $img_uri = $item->entity->getFileUri();
-  if (!empty($settings['colorbox_image_style'])) {
-    $style = entity_load('image_style', $settings['colorbox_image_style']);
-    $path = $style->buildUrl($img_uri);
+  // Set ut the $variables['image'] parameter.
+  if (!empty($settings['colorbox_node_style'])) {
+    $variables['image'] = array(
+      '#theme' => 'image_style',
+      '#style_name' => $settings['colorbox_node_style'],
+    );
   }
   else {
-    $path = file_create_url($img_uri);
+    $variables['image'] = array(
+      '#theme' => 'image',
+    );
+  }
+  $variables['image']['#attributes'] = $item_attributes;
+
+  // Do not output an empty 'title' attribute.
+  if (drupal_strlen($item->title) != 0) {
+    $variables['image']['#title'] = $item->title;
   }
 
-  // Extract field item attributes for the theme function, and unset them
-  // from the $item so that the field template does not re-render them.
-  $item_attributes = $item->_attributes;
-  unset($item->_attributes);
+  foreach (array('width', 'height', 'alt') as $key) {
+    $variables['image']["#$key"] = $item->$key;
+  }
+
+  $image_uri = $item->entity->getFileUri();
+  $variables['image']['#uri'] = empty($item->uri) ? $image_uri : $item->uri;
+
+  if (!empty($settings['colorbox_image_style'])) {
+    $style = entity_load('image_style', $settings['colorbox_image_style']);
+    $variables['url'] = $style->buildUrl($image_uri);
+  }
+  else {
+    $variables['url'] = file_create_url($image_uri);
+  }
 
   $class = array('colorbox');
-
   if ($settings['colorbox_node_style'] == 'hide') {
     $class[] = 'js-hide';
   }
-
-  $link_attributes = array(
-    'attributes' => array(
-      'title' => $caption,
-      'class' => $class,
-      'rel' => $gallery_id,
-    ),
-  );
-  $link = array('path' => $path, 'options' => $link_attributes);
-
-  $build = array(
-    '#theme' => 'image_formatter',
-    '#item' => $item,
-    '#item_attributes' => $item_attributes,
-    '#image_style' => $settings['colorbox_node_style'],
-    '#path' => $link,
-  );
-
-  return drupal_render($build);
+  $variables['attributes'] = new Attribute();
+  $variables['attributes']['title'] = $caption;
+  $variables['attributes']['rel'] = $gallery_id;
+  $variables['attributes']['class'] = $class;
 }

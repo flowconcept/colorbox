@@ -9,6 +9,7 @@ namespace Drupal\colorbox\Plugin\Field\FieldFormatter;
 
 use Drupal\image\Plugin\Field\FieldFormatter\ImageFormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'colorbox' formatter.
@@ -42,7 +43,7 @@ class ColorboxFormatter extends ImageFormatterBase {
   /**
    * {@inheritdoc}
    */
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     $image_styles = image_style_options(FALSE);
     $image_styles_hide = $image_styles;
     $image_styles_hide['hide'] = t('Hide (do not display image)');
@@ -201,17 +202,34 @@ class ColorboxFormatter extends ImageFormatterBase {
    */
   public function viewElements(FieldItemListInterface $items) {
     $elements = array();
+
     $index = $this->getSetting('colorbox_multivalue_index');
     $entity = $items->getEntity();
     $settings = $this->getSettings();
 
+    // Collect cache tags to be added for each item in the field.
+    $cache_tags = array();
+    if (!empty($settings['colorbox_node_style'])) {
+      $image_style = entity_load('image_style', $settings['colorbox_node_style']);
+      $cache_tags = $image_style->getCacheTag();
+    }
+
     foreach ($items as $delta => $item) {
-      if ($index === NULL || $index === '' || $index === $delta) {
+      if ($item->entity && ($index === NULL || $index === '' || $index === $delta)) {
+        // Extract field item attributes for the theme function, and unset them
+        // from the $item so that the field template does not re-render them.
+        $item_attributes = $item->_attributes;
+        unset($item->_attributes);
+
         $elements[$delta] = array(
           '#theme' => 'colorbox_formatter',
           '#item' => $item,
+          '#item_attributes' => $item_attributes,
           '#entity' => $entity,
           '#settings' => $settings,
+          '#cache' => array(
+            'tags' => $cache_tags,
+          ),
         );
       }
     }

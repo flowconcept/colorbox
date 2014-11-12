@@ -9,6 +9,7 @@
 namespace Drupal\colorbox\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * General configuration form for controlling the colorbox behaviour..
@@ -19,15 +20,15 @@ class ColorboxSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormID() {
-    return 'colorbox_admin_settings';
+    return 'colorbox_admin_settings_form';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, array &$form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     // Get all settings
-    $config = $this->configFactory->get('colorbox.settings');
+    $config = $this->config('colorbox.settings');
 
     $form['#attached']['js'][] = array('data' => drupal_get_path('module', 'colorbox') . '/js/colorbox_admin_settings.js', 'preprocess' => FALSE);
 
@@ -98,7 +99,7 @@ class ColorboxSettingsForm extends ConfigFormBase {
     $form['colorbox_custom_settings']['colorbox_transition_speed'] = array(
       '#type' => 'select',
       '#title' => t('Transition speed'),
-      '#options' => array_map('format_interval', array_combine($speed_options, $speed_options)),
+      '#options' => array_combine($speed_options, $speed_options),
       '#default_value' => $config->get('custom.transition_speed'),
       '#description' => t('Sets the speed of the fade and elastic transitions, in milliseconds.'),
     );
@@ -106,7 +107,7 @@ class ColorboxSettingsForm extends ConfigFormBase {
     $form['colorbox_custom_settings']['colorbox_opacity'] = array(
       '#type' => 'select',
       '#title' => t('Opacity'),
-      '#options' => array_map('format_interval', array_combine($opacity_options, $opacity_options)),
+      '#options' => array_combine($opacity_options, $opacity_options),
       '#default_value' => $config->get('custom.opacity'),
       '#description' => t('The overlay opacity level. Range: 0 to 1.'),
     );
@@ -316,7 +317,7 @@ class ColorboxSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
 
     // Get config factory
     $config = $this->configFactory->get('colorbox.settings');

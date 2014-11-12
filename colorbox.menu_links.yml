@@ -1,6 +1,0 @@
-colorbox.settings:
-  title: 'Colorbox'
-  parent: system.admin_config_media
-  route_name: colorbox.settings
-  description: 'Adjust Colorbox settings.'
-  weight: 20
