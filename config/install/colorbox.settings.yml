@@ -1,6 +1,6 @@
 extra:
-  load: '0'
-  inline: '0'
+  load: FALSE
+  inline: FALSE
 custom:
   style: 'default'
   activate: '0'
@@ -11,16 +11,16 @@ custom:
   text_previous: '« Prev'
   text_next: 'Next »'
   text_close: 'Close'
-  overlayclose: '1'
   maxwidth: '98%'
   maxheight: '98%'
   initialwidth: '300'
   initialheight: '250'
-  fixed: '1'
-  scrolling: '1'
+  overlayclose: TRUE
+  fixed: TRUE
+  scrolling: TRUE
   slideshow:
     slideshow: '0'
-    auto: '1'
+    auto: TRUE
     speed: '2500'
     text_start: 'start slideshow'
     text_stop: 'stop slideshow'

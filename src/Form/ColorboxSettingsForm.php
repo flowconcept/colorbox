@@ -139,12 +139,6 @@ class ColorboxSettingsForm extends ConfigFormBase {
       '#size' => 30,
       '#description' => t('Text for the close button. The "Esc" key will also close Colorbox.'),
     );
-    $form['colorbox_custom_settings']['colorbox_overlayclose'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Overlay close'),
-      '#default_value' => $config->get('custom.overlayclose'),
-      '#description' => t('Enable closing Colorbox by clicking on the background overlay.'),
-    );
     $form['colorbox_custom_settings']['colorbox_maxwidth'] = array(
       '#type' => 'textfield',
       '#title' => t('Max width'),
@@ -173,11 +167,23 @@ class ColorboxSettingsForm extends ConfigFormBase {
       '#size' => 30,
       '#description' => t('Set the initial height, prior to any content being loaded. Example: "100%", 500, "500px".'),
     );
+    $form['colorbox_custom_settings']['colorbox_overlayclose'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Overlay close'),
+      '#default_value' => $config->get('custom.overlayclose'),
+      '#description' => t('Enable closing Colorbox by clicking on the background overlay.'),
+    );
     $form['colorbox_custom_settings']['colorbox_fixed'] = array(
       '#type' => 'checkbox',
       '#title' => t('Fixed'),
       '#default_value' => $config->get('custom.fixed'),
       '#description' => t('If the Colorbox should be displayed in a fixed position within the visitor\'s viewport or relative to the document.'),
+    );
+    $form['colorbox_custom_settings']['colorbox_scrolling'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Scrollbars'),
+      '#default_value' => $config->get('custom.scrolling'),
+      '#description' => t('If unchecked, Colorbox will hide scrollbars for overflowing content. This could be used on conjunction with the resize method for a smoother transition if you are appending content to an already open instance of Colorbox.'),
     );
 
     $form['colorbox_custom_settings']['colorbox_slideshow_settings'] = array(
@@ -195,13 +201,6 @@ class ColorboxSettingsForm extends ConfigFormBase {
       '#prefix' => '<div class="colorbox-slideshow-settings-activate">',
       '#suffix' => '</div>',
     );
-    $form['colorbox_custom_settings']['colorbox_scrolling'] = array(
-      '#type' => 'radios',
-      '#title' => t('Scrollbars'),
-      '#options' => array(1 => t('On'), 0 => t('Off')),
-      '#default_value' => $config->get('custom.scrolling'),
-      '#description' => t('If false, Colorbox will hide scrollbars for overflowing content. This could be used on conjunction with the resize method for a smoother transition if you are appending content to an already open instance of Colorbox.'),
-    );
 
     $js_hide = $config->get('custom.slideshow.slideshow') ? '' : ' js-hide';
     $form['colorbox_custom_settings']['colorbox_slideshow_settings']['wrapper_start'] = array(
@@ -218,7 +217,7 @@ class ColorboxSettingsForm extends ConfigFormBase {
     $form['colorbox_custom_settings']['colorbox_slideshow_settings']['colorbox_slideshowspeed'] = array(
       '#type' => 'select',
       '#title' => t('Slideshow speed'),
-      '#options' => array_map('format_interval', array_combine($slideshow_options, $slideshow_options)),
+      '#options' => array_combine($slideshow_options, $slideshow_options),
       '#default_value' => $config->get('custom.slideshow.speed'),
       '#description' => t('Sets the speed of the slideshow, in milliseconds.'),
     );
@@ -281,7 +280,7 @@ class ColorboxSettingsForm extends ConfigFormBase {
     $form['colorbox_advanced_settings']['colorbox_caption_trim_length'] = array(
       '#type' => 'select',
       '#title' => t('Caption max length'),
-      '#options' => array_map('format_interval', array_combine($trim_options, $trim_options)),
+      '#options' => array_combine($trim_options, $trim_options),
       '#default_value' => $config->get('advanced.caption_trim_length'),
       '#states' => array(
         'visible' => array(

@@ -17,7 +17,7 @@ colorbox.settings:
         type: string
         label: 'Style'
       activate:
-        type: boolean
+        type: integer
         label: 'Options'
       transition_type:
         type: string
@@ -40,9 +40,6 @@ colorbox.settings:
       text_close:
         type: text
         label: 'Close'
-      overlayclose:
-        type: boolean
-        label: 'Overlay close'
       maxwidth:
         type: text
         label: 'Max width'
@@ -55,6 +52,9 @@ colorbox.settings:
       initialheight:
         type: text
         label: 'Initial height'
+      overlayclose:
+        type: boolean
+        label: 'Overlay close'
       fixed:
         type: boolean
         label: 'Fixed'
@@ -85,13 +85,13 @@ colorbox.settings:
       label: 'Advanced settings'
       mapping:
         mobile_detect:
-          type: boolean
+          type: integer
           label: 'Mobile detection'
         mobile_device_width:
           type: 'string'
           label: 'Device width'
         caption_trim:
-          type: boolean
+          type: integer
           label: 'Caption shortening'
         caption_trim_length:
           type: integer
