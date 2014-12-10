@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Template\Attribute;
+use Drupal\Component\Utility\Unicode;
 
 /**
  * Prepares variables for colorbox formatter templates.
@@ -69,7 +70,7 @@ function template_preprocess_colorbox_formatter(&$variables) {
   $config = \Drupal::config('colorbox.settings');
   $colorbox_style = $config->get('colorbox_style');
   $trim_length = $config->get('colorbox_caption_trim_length');
-  if (((strpos($colorbox_style, 'colorbox/example') !== FALSE) || $config->get('colorbox_caption_trim')) && (drupal_strlen($caption) > $trim_length)) {
+  if (((strpos($colorbox_style, 'colorbox/example') !== FALSE) || $config->get('colorbox_caption_trim')) && (Unicode::strlen($caption) > $trim_length)) {
     $caption = drupal_substr($caption, 0, $trim_length - 5) . '...';
   }
 
@@ -114,7 +115,7 @@ function template_preprocess_colorbox_formatter(&$variables) {
   $variables['image']['#attributes'] = $item_attributes;
 
   // Do not output an empty 'title' attribute.
-  if (drupal_strlen($item->title) != 0) {
+  if (Unicode::strlen($item->title) != 0) {
     $variables['image']['#title'] = $item->title;
   }
 

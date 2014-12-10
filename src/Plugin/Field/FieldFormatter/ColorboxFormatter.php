@@ -211,7 +211,7 @@ class ColorboxFormatter extends ImageFormatterBase {
     $cache_tags = array();
     if (!empty($settings['colorbox_node_style'])) {
       $image_style = entity_load('image_style', $settings['colorbox_node_style']);
-      $cache_tags = $image_style->getCacheTag();
+      $cache_tags = $image_style->getCacheTags();
     }
 
     foreach ($items as $delta => $item) {
