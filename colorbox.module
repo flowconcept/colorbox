@@ -30,9 +30,9 @@ function colorbox_theme() {
 }
 
 /**
- * Implements hook_page_build().
+ * Implements hook_page_attachments().
  */
-function colorbox_page_build(&$page) {
+function colorbox_page_attachments(&$page) {
   $config = \Drupal::config('colorbox.settings');
   if (!drupal_installation_attempted()) {
     static $already_added = FALSE;
@@ -90,10 +90,7 @@ function colorbox_page_build(&$page) {
       // Give other modules the possibility to override Colorbox settings and style.
       \Drupal::moduleHandler()->alter('colorbox_settings', $js_settings, $style);
 
-      $page['#attached']['js'][] = array(
-        'data' => array('colorbox' => $js_settings),
-        'type' => 'setting',
-      );
+      $page['#attached']['js'][] = array('type' => 'setting', 'data' => array('colorbox' => $js_settings));
 
       // Add and initialise the Colorbox plugin.
       $variant = $config->get('advanced.compression_type');
