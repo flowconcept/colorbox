@@ -100,8 +100,14 @@ function template_preprocess_colorbox_formatter(&$variables) {
       $gallery_id = '';
   }
 
-  // Set ut the $variables['image'] parameter.
-  if (!empty($settings['colorbox_node_style'])) {
+  // Set up the $variables['image'] parameter.
+  if ($settings['style_first']) {
+    $variables['image'] = array(
+      '#theme' => 'image_style',
+      '#style_name' => $settings['colorbox_node_style_first'],
+    );
+  }
+  elseif (!empty($settings['colorbox_node_style'])) {
     $variables['image'] = array(
       '#theme' => 'image_style',
       '#style_name' => $settings['colorbox_node_style'],

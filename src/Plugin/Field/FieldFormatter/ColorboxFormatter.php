@@ -31,12 +31,12 @@ class ColorboxFormatter extends ImageFormatterBase {
   public static function defaultSettings() {
     return array(
       'colorbox_node_style' => '',
+      'colorbox_node_style_first' => '',
       'colorbox_image_style' => '',
       'colorbox_gallery' => 'post',
       'colorbox_gallery_custom' => '',
       'colorbox_caption' => 'auto',
       'colorbox_caption_custom' => '',
-      'colorbox_multivalue_index' => NULL,
     ) + parent::defaultSettings();
   }
 
@@ -54,6 +54,14 @@ class ColorboxFormatter extends ImageFormatterBase {
       '#empty_option' => t('None (original image)'),
       '#options' => $image_styles_hide,
       '#description' => t('Image style to use in the content.'),
+    );
+    $element['colorbox_node_style_first'] = array(
+      '#title' => t('Content image style for first image'),
+      '#type' => 'select',
+      '#default_value' => $this->getSetting('colorbox_node_style_first'),
+      '#empty_option' => t('No special style.'),
+      '#options' => $image_styles,
+      '#description' => t('Image style to use in the content for the first image.'),
     );
     $element['colorbox_image_style'] = array(
       '#title' => t('Colorbox image style'),
@@ -162,6 +170,10 @@ class ColorboxFormatter extends ImageFormatterBase {
       $summary[] = t('Content image style: Original image');
     }
 
+    if (isset($image_styles[$this->getSetting('colorbox_node_style_first')])) {
+      $summary[] = t('Content image style of first image: @style', array('@style' => $image_styles[$this->getSetting('colorbox_node_style_first')]));
+    }
+
     if (isset($image_styles[$this->getSetting('colorbox_image_style')])) {
       $summary[] = t('Colorbox image style: @style', array('@style' => $image_styles[$this->getSetting('colorbox_image_style')]));
     }
@@ -203,7 +215,6 @@ class ColorboxFormatter extends ImageFormatterBase {
   public function viewElements(FieldItemListInterface $items) {
     $elements = array();
 
-    $index = $this->getSetting('colorbox_multivalue_index');
     $entity = $items->getEntity();
     $settings = $this->getSettings();
 
@@ -213,13 +224,25 @@ class ColorboxFormatter extends ImageFormatterBase {
       $image_style = entity_load('image_style', $settings['colorbox_node_style']);
       $cache_tags = $image_style->getCacheTags();
     }
+    $cache_tags_first = array();
+    if (!empty($settings['colorbox_node_style_first'])) {
+      $image_style_first = entity_load('image_style', $settings['colorbox_node_style_first']);
+      $cache_tags_first = $image_style_first->getCacheTags();
+    }
 
     foreach ($items as $delta => $item) {
-      if ($item->entity && ($index === NULL || $index === '' || $index === $delta)) {
+      if ($item->entity) {
         // Extract field item attributes for the theme function, and unset them
         // from the $item so that the field template does not re-render them.
         $item_attributes = $item->_attributes;
         unset($item->_attributes);
+
+        if ($delta == 0 && !empty($settings['colorbox_node_style_first'])) {
+          $settings['style_first'] = TRUE;
+        }
+        else {
+          $settings['style_first'] = FALSE;
+        }
 
         $elements[$delta] = array(
           '#theme' => 'colorbox_formatter',
@@ -228,7 +251,7 @@ class ColorboxFormatter extends ImageFormatterBase {
           '#entity' => $entity,
           '#settings' => $settings,
           '#cache' => array(
-            'tags' => $cache_tags,
+            'tags' => $settings['style_first'] ? $cache_tags_first : $cache_tags,
           ),
         );
       }
