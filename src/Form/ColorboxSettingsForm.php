@@ -34,23 +34,6 @@ class ColorboxSettingsForm extends ConfigFormBase {
 
     $library = libraries_detect('colorbox');
 
-    $form['colorbox_extra_features'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Extra features'),
-    );
-    $form['colorbox_extra_features']['colorbox_load'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Enable Colorbox load'),
-      '#default_value' => $config->get('extra.load'),
-      '#description' => t('This enables custom links that can open forms and paths in a Colorbox. Add the class "colorbox-load" to the link and build the url like this for paths "[path]?width=500&height=500&iframe=true" or "[path]?width=500&height=500" if you don\'t want an iframe. Other modules may activate this for easy Colorbox integration.'),
-    );
-    $form['colorbox_extra_features']['colorbox_inline'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Enable Colorbox inline'),
-      '#default_value' => $config->get('extra.inline'),
-      '#description' => t('This enables custom links that can open inline content in a Colorbox. Add the class "colorbox-inline" to the link and build the url like this "?width=500&height=500&inline=true#id-of-content". Other modules may activate this for easy Colorbox integration.'),
-    );
-
     $form['colorbox_custom_settings'] = array(
       '#type' => 'fieldset',
       '#title' => t('Styles and options'),
@@ -323,8 +306,6 @@ class ColorboxSettingsForm extends ConfigFormBase {
     $form_values = $form_state['values'];
 
     $config
-      ->set('extra.load', $form_values['colorbox_load'])
-      ->set('extra.inline', $form_values['colorbox_inline'])
       ->set('custom.style', $form_values['colorbox_style'])
       ->set('custom.activate', $form_values['colorbox_custom_settings_activate'])
       ->set('custom.transition_type', $form_values['colorbox_transition_type'])

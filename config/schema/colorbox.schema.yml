@@ -2,16 +2,6 @@ colorbox.settings:
   type: mapping
   label: 'Colorbox settings'
   mapping:
-    extra:
-      type: mapping
-      label: 'Extra features'
-      mapping:
-        load:
-          type: boolean
-          label: 'Enable Colorbox load'
-        inline:
-          type: boolean
-          label: 'Enable Colorbox inline'
     custom:
       style:
         type: string

@@ -111,14 +111,6 @@ function colorbox_page_attachments(&$page) {
           $page['#attached']['css'][$path . '/styles/' . $style . '/colorbox.css'] = array();
       }
 
-      if ($config->get('extra.load', 0)) {
-        //$page['#attached']['js'][$path . '/js/colorbox_load.js'] = array();
-      }
-
-      if ($config->get('extra.inline', 0)) {
-        //$page['#attached']['js'][$path . '/js/colorbox_inline.js'] = array();
-      }
-
       $already_added = TRUE;
     }
 }
