@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Path\PathMatcher;
 
 /**
  * The default path to the Colorbox directory.
@@ -179,9 +180,9 @@ function _colorbox_active() {
   // Compare the lowercase path alias (if any) and internal path.
   $path = current_path();
   $path_alias = Unicode::strtolower(\Drupal::service('path.alias_storage')->lookupPathAlias($path, 'en'));
-  $page_match = drupal_match_path($path_alias, $pages);
+  $page_match = \Drupal::service('path.matcher')->matchPath($path_alias, $pages);
   if ($path_alias != $path) {
-    $page_match = $page_match || drupal_match_path($path, $pages);
+    $page_match = $page_match || \Drupal::service('path.matcher')->matchPath($path, $pages);
   }
   $page_match = $config->get('advanced.visibility') == 0 ? !$page_match : $page_match;
 
