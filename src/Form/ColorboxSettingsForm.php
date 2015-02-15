@@ -23,12 +23,19 @@ class ColorboxSettingsForm extends ConfigFormBase {
     return 'colorbox_admin_settings_form';
   }
 
+ /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return ['colorbox.settings',];
+  }
+
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Get all settings
-    $config = $this->config('colorbox.settings');
+    $config = $this->configFactory->get('colorbox.settings');
 
     $form['#attached']['library'][] = 'colorbox/settings';
 
@@ -302,7 +309,7 @@ class ColorboxSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
     // Get config factory
-    $config = $this->configFactory->get('colorbox.settings');
+    $config = $this->configFactory->getEditable('colorbox.settings');
 
     $config
       ->set('custom.style',  $form_state->getValue('colorbox_style'))
