@@ -1,0 +1,9 @@
+{
+    "name": "flowconcept/colorbox",
+    "version": "master",
+    "type": "drupal-module",
+    "soure": {
+        "url": "git@github:flowconcept/colorbox.git",
+        "type": "git"
+    }
+}
