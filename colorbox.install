@@ -15,6 +15,7 @@ function colorbox_requirements($phase) {
   $requirements = array();
 
   if ($phase == 'runtime') {
+    /*
     $library = libraries_detect('colorbox');
     $error_type = isset($library['error']) ? Unicode::ucfirst($library['error']) : '';
     $error_message = isset($library['error message']) ? $library['error message'] : '';
@@ -42,6 +43,7 @@ function colorbox_requirements($phase) {
         'description' => t('You need to download a later version of the !colorbox and replace the old version located in the %path directory on your server.', array('!colorbox' => \Drupal::l(t('Colorbox plugin'), Url::fromUri($library['download url'])), '%path' => $library['library path'])),
       );
     }
+    */
   }
 
   return $requirements;
