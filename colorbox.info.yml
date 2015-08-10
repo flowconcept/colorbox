@@ -4,5 +4,3 @@ description: 'A light-weight, customizable lightbox plugin for jQuery 1.4.3+.'
 package: Media
 core: 8.x
 configure: colorbox.settings
-dependencies:
-  - libraries

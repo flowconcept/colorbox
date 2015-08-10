@@ -96,7 +96,7 @@ function colorbox_page_attachments(&$page) {
 
       // Add and initialise the Colorbox plugin.
       $variant = $config->get('advanced.compression_type');
-      libraries_load('colorbox', $variant);
+      #libraries_load('colorbox', $variant);
       $page['#attached']['library'][] = 'colorbox/colorbox';
 
       // Add JS and CSS based on selected style.
