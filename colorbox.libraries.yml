@@ -1,0 +1,51 @@
+colorbox:
+  version: VERSION
+  js:
+    js/colorbox.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+
+settings:
+  version: VERSION
+  js:
+    js/colorbox_admin_settings.js: { preprocess: false }
+  dependencies:
+    - core/jquery
+    - core/drupal
+
+plain:
+  version: VERSION
+  js:
+    styles/plain/colorbox_style.js: {}
+  css:
+    theme:
+      styles/plain/colorbox_style.css: {}
+  dependencies:
+    - colorbox/colorbox
+    - core/jquery
+    - core/drupal
+
+stockholmsyndrome:
+  version: VERSION
+  js:
+    styles/stockholmsyndrome/colorbox_style.js: {}
+  css:
+    theme:
+      styles/stockholmsyndrome/colorbox_style.css: {}
+  dependencies:
+    - colorbox/colorbox
+    - core/jquery
+    - core/drupal
+
+default:
+  version: VERSION
+  js:
+    styles/default/colorbox_style.js: {}
+  css:
+    theme:
+      styles/default/colorbox_style.css: {}
+  dependencies:
+    - colorbox/colorbox
+    - core/jquery
+    - core/drupal

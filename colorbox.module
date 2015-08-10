@@ -1,0 +1,215 @@
+<?php
+
+/**
+ * @file
+ * A light-weight, customizable lightbox plugin for jQuery 1.3
+ */
+
+use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Path\PathMatcher;
+use Drupal\Core\Url;
+
+/**
+ * The default path to the Colorbox directory.
+ */
+define('COLORBOX_MIN_PLUGIN_VERSION', '1.5.14');
+
+
+/**
+ * Implements hook_theme().
+ */
+function colorbox_theme() {
+  return array(
+    'colorbox_formatter' => array(
+      'variables' => array(
+        'item' => NULL,
+        'entity' => NULL,
+        'settings' => NULL,
+      ),
+      'file' => 'colorbox.inc',
+    ),
+  );
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function colorbox_page_attachments(&$page) {
+  $config = \Drupal::config('colorbox.settings');
+  if (!drupal_installation_attempted()) {
+    static $already_added = FALSE;
+    if ($already_added) {
+      return; // Don't add the JavaScript and CSS multiple times.
+    }
+    if (!_colorbox_active()) {
+      return; // Don't add the JavaScript and CSS on specified paths.
+    }
+
+    // Insert options and translated strings as javascript settings.
+    if ($config->get('custom.activate')) {
+      $js_settings = array(
+        'transition' => $config->get('custom.transition_type'),
+        'speed' => $config->get('custom.transition_speed'),
+        'opacity' => $config->get('custom.opacity'),
+        'slideshow' => $config->get('custom.slideshow.slideshow') ? TRUE : FALSE,
+        'slideshowAuto' => $config->get('custom.slideshow.auto') ? TRUE : FALSE,
+        'slideshowSpeed' => $config->get('custom.slideshow.speed'),
+        'slideshowStart' => $config->get('custom.slideshow.text_start'),
+        'slideshowStop' => $config->get('custom.slideshow.text_stop'),
+        'current' => $config->get('custom.text_current'),
+        'previous' => $config->get('custom.text_previous'),
+        'next' => $config->get('custom.text_next'),
+        'close' => $config->get('custom.text_close'),
+        'overlayClose' => $config->get('custom.overlayclose') ? TRUE : FALSE,
+        'maxWidth' => $config->get('custom.maxwidth'),
+        'maxHeight' => $config->get('custom.maxheight'),
+        'initialWidth' => $config->get('custom.initialwidth'),
+        'initialHeight' => $config->get('custom.initialheight'),
+        'fixed' => $config->get('custom.fixed') ? TRUE : FALSE,
+        'scrolling' => $config->get('custom.scrolling') ? TRUE : FALSE,
+        'mobiledetect' => $config->get('advanced.mobile_detect') ? TRUE : FALSE,
+        'mobiledevicewidth' => $config->get('advanced.mobile_device_width'),
+      );
+    }
+    else {
+        $js_settings = array(
+          'opacity' => '0.85',
+          'current' => t('{current} of {total}'),
+          'previous' => t('« Prev'),
+          'next' => t('Next »'),
+          'close' => t('Close'),
+          'maxWidth' => '98%',
+          'maxHeight' => '98%',
+          'fixed' => TRUE,
+          'mobiledetect' => $config->get('advanced.mobile_detect') ? TRUE : FALSE,
+          'mobiledevicewidth' => $config->get('advanced.mobile_device_width'),
+        );
+      }
+
+      $path = drupal_get_path('module', 'colorbox');
+      $style = $config->get('custom.style');
+
+      // Give other modules the possibility to override Colorbox settings and style.
+      \Drupal::moduleHandler()->alter('colorbox_settings', $js_settings, $style);
+
+      $page['#attached']['drupalSettings']['colorbox'] = $js_settings;
+
+      // Add and initialise the Colorbox plugin.
+      $variant = $config->get('advanced.compression_type');
+      libraries_load('colorbox', $variant);
+      $page['#attached']['library'][] = 'colorbox/colorbox';
+
+      // Add JS and CSS based on selected style.
+      switch ($style) {
+        case 'none':
+          break;
+        case 'default':
+          $page['#attached']['library'][] = 'colorbox/default';
+          break;
+        case 'plain':
+          $page['#attached']['library'][] = 'colorbox/plain';
+          break;
+        case 'stockholmsyndrome':
+          $page['#attached']['library'][] = 'colorbox/stockholmsyndrome';
+          break;
+        default:
+          $page['#attached']['library'][] = 'colorbox/default';
+      }
+
+      $already_added = TRUE;
+    }
+}
+
+
+/**
+ * Implements hook_libraries_info().
+ */
+function colorbox_libraries_info() {
+  $libraries['colorbox'] = array(
+    'name' => 'Colorbox plugin',
+    'vendor url' => 'http://www.jacklmoore.com/colorbox',
+    'download url' => 'https://github.com/jackmoore/colorbox/archive/1.x.zip',
+    'version arguments' => array(
+      'file' => 'jquery.colorbox-min.js',
+      'pattern' => '@(?i:Colorbox)\sv?([0-9\.a-z]+)@',
+      'lines' => 5,
+    ),
+    'files' => array(
+      'js' => array(
+        'jquery.colorbox-min.js',
+      ),
+    ),
+    'variants' => array(
+      'minified' => array(
+        'files' => array(
+          'js' => array(
+            'jquery.colorbox-min.js',
+          ),
+        ),
+      ),
+      'source' => array(
+        'files' => array(
+          'js' => array(
+            'jquery.colorbox.js',
+          ),
+        ),
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Check if Colorbox should be active for the current URL.
+ *
+ * @return
+ *   TRUE if Colorbox should be active for the current page.
+ */
+function _colorbox_active() {
+  // Make it possible deactivate Colorbox with
+  // parameter ?colorbox=no in the url.
+  if (isset($_GET['colorbox']) && $_GET['colorbox'] == 'no') {
+    return FALSE;
+  }
+
+  // Assume there are no matches until one is found.
+  $page_match = FALSE;
+
+  // Convert path to lowercase. This allows comparison of the same path
+  // with different case. Ex: /Page, /page, /PAGE.
+  $config = \Drupal::config('colorbox.settings');
+  $pages = Unicode::strtolower(_colorbox_array_to_string($config->get('advanced.pages')));
+
+  // Compare the lowercase path alias (if any) and internal path.
+  $path = Url::fromRoute('<current>')->toString();
+  $path_alias = Unicode::strtolower(\Drupal::service('path.alias_storage')->lookupPathAlias($path, 'en'));
+  $page_match = \Drupal::service('path.matcher')->matchPath($path_alias, $pages);
+  if ($path_alias != $path) {
+    $page_match = $page_match || \Drupal::service('path.matcher')->matchPath($path, $pages);
+  }
+  $page_match = $config->get('advanced.visibility') == 0 ? !$page_match : $page_match;
+
+  return $page_match;
+}
+
+/**
+ * Converts a text with lines (\n) into an array of lines.
+ *
+ * @return
+ *   Array with as many items as non-empty lines in the text
+ */
+function _colorbox_string_to_array($text) {
+  $text = str_replace("\r\n", "\n", $text);
+  return array_filter(explode("\n", $text), 'trim');
+}
+
+/**
+ * Converts an array of lines into an text with lines (\n).
+ *
+ * @return
+ *   Text with lines
+ */
+function _colorbox_array_to_string($array) {
+  return implode("\r\n", $array);
+}
