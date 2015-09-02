@@ -13,6 +13,7 @@ use Drupal\Component\Utility\Unicode;
 function colorbox_requirements($phase) {
   $requirements = array();
 
+/*
   if ($phase == 'runtime') {
     $library = libraries_detect('colorbox');
     $error_type = isset($library['error']) ? Unicode::ucfirst($library['error']) : '';
@@ -49,6 +50,7 @@ function colorbox_requirements($phase) {
       );
     }
   }
+*/
 
   return $requirements;
 }

@@ -34,130 +34,82 @@ function colorbox_theme() {
 /**
  * Implements hook_page_attachments().
  */
-function colorbox_page_attachments(&$page) {
+function colorbox_page_attachments(array &$page) {
+  if (drupal_installation_attempted()) {
+    return; // Don't add the JavaScript and CSS during installation.
+  }
+  static $already_added = FALSE;
+  if ($already_added) {
+    return; // Don't add the JavaScript and CSS multiple times.
+  }
+  if (!_colorbox_active()) {
+    return; // Don't add the JavaScript and CSS on specified paths.
+  }
+
+  // Insert options and translated strings as javascript settings.
   $config = \Drupal::config('colorbox.settings');
-  if (!drupal_installation_attempted()) {
-    static $already_added = FALSE;
-    if ($already_added) {
-      return; // Don't add the JavaScript and CSS multiple times.
-    }
-    if (!_colorbox_active()) {
-      return; // Don't add the JavaScript and CSS on specified paths.
-    }
+  if ($config->get('custom.activate')) {
+    $js_settings = array(
+      'transition' => $config->get('custom.transition_type'),
+      'speed' => $config->get('custom.transition_speed'),
+      'opacity' => $config->get('custom.opacity'),
+      'slideshow' => $config->get('custom.slideshow.slideshow') ? TRUE : FALSE,
+      'slideshowAuto' => $config->get('custom.slideshow.auto') ? TRUE : FALSE,
+      'slideshowSpeed' => $config->get('custom.slideshow.speed'),
+      'slideshowStart' => $config->get('custom.slideshow.text_start'),
+      'slideshowStop' => $config->get('custom.slideshow.text_stop'),
+      'current' => $config->get('custom.text_current'),
+      'previous' => $config->get('custom.text_previous'),
+      'next' => $config->get('custom.text_next'),
+      'close' => $config->get('custom.text_close'),
+      'overlayClose' => $config->get('custom.overlayclose') ? TRUE : FALSE,
+      'maxWidth' => $config->get('custom.maxwidth'),
+      'maxHeight' => $config->get('custom.maxheight'),
+      'initialWidth' => $config->get('custom.initialwidth'),
+      'initialHeight' => $config->get('custom.initialheight'),
+      'fixed' => $config->get('custom.fixed') ? TRUE : FALSE,
+      'scrolling' => $config->get('custom.scrolling') ? TRUE : FALSE,
+      'mobiledetect' => $config->get('advanced.mobile_detect') ? TRUE : FALSE,
+      'mobiledevicewidth' => $config->get('advanced.mobile_device_width'),
+    );
+  }
+  else {
+    $js_settings = array(
+      'opacity' => '0.85',
+      'current' => t('{current} of {total}'),
+      'previous' => t('« Prev'),
+      'next' => t('Next »'),
+      'close' => t('Close'),
+      'maxWidth' => '98%',
+      'maxHeight' => '98%',
+      'fixed' => TRUE,
+      'mobiledetect' => $config->get('advanced.mobile_detect') ? TRUE : FALSE,
+      'mobiledevicewidth' => $config->get('advanced.mobile_device_width'),
+    );
+  }
 
-    // Insert options and translated strings as javascript settings.
-    if ($config->get('custom.activate')) {
-      $js_settings = array(
-        'transition' => $config->get('custom.transition_type'),
-        'speed' => $config->get('custom.transition_speed'),
-        'opacity' => $config->get('custom.opacity'),
-        'slideshow' => $config->get('custom.slideshow.slideshow') ? TRUE : FALSE,
-        'slideshowAuto' => $config->get('custom.slideshow.auto') ? TRUE : FALSE,
-        'slideshowSpeed' => $config->get('custom.slideshow.speed'),
-        'slideshowStart' => $config->get('custom.slideshow.text_start'),
-        'slideshowStop' => $config->get('custom.slideshow.text_stop'),
-        'current' => $config->get('custom.text_current'),
-        'previous' => $config->get('custom.text_previous'),
-        'next' => $config->get('custom.text_next'),
-        'close' => $config->get('custom.text_close'),
-        'overlayClose' => $config->get('custom.overlayclose') ? TRUE : FALSE,
-        'maxWidth' => $config->get('custom.maxwidth'),
-        'maxHeight' => $config->get('custom.maxheight'),
-        'initialWidth' => $config->get('custom.initialwidth'),
-        'initialHeight' => $config->get('custom.initialheight'),
-        'fixed' => $config->get('custom.fixed') ? TRUE : FALSE,
-        'scrolling' => $config->get('custom.scrolling') ? TRUE : FALSE,
-        'mobiledetect' => $config->get('advanced.mobile_detect') ? TRUE : FALSE,
-        'mobiledevicewidth' => $config->get('advanced.mobile_device_width'),
-      );
-    }
-    else {
-        $js_settings = array(
-          'opacity' => '0.85',
-          'current' => t('{current} of {total}'),
-          'previous' => t('« Prev'),
-          'next' => t('Next »'),
-          'close' => t('Close'),
-          'maxWidth' => '98%',
-          'maxHeight' => '98%',
-          'fixed' => TRUE,
-          'mobiledetect' => $config->get('advanced.mobile_detect') ? TRUE : FALSE,
-          'mobiledevicewidth' => $config->get('advanced.mobile_device_width'),
-        );
-      }
+  $style = $config->get('custom.style');
 
-      $path = drupal_get_path('module', 'colorbox');
-      $style = $config->get('custom.style');
+  // Give other modules the possibility to override Colorbox settings and style.
+  \Drupal::moduleHandler()->alter('colorbox_settings', $js_settings, $style);
 
-      // Give other modules the possibility to override Colorbox settings and style.
-      \Drupal::moduleHandler()->alter('colorbox_settings', $js_settings, $style);
+  // Add colorbox js settings.
+  $page['#attached']['drupalSettings']['colorbox'] = $js_settings;
 
-      $page['#attached']['drupalSettings']['colorbox'] = $js_settings;
+  // Add and initialise the Colorbox plugin.
+  if ($config->get('advanced.compression_type' == 'minified')) {
+    $page['#attached']['library'][] = 'colorbox/colorbox';
+  }
+  else {
+    $page['#attached']['library'][] = 'colorbox/colorbox-dev';
+  }
 
-      // Add and initialise the Colorbox plugin.
-      $variant = $config->get('advanced.compression_type');
-      libraries_load('colorbox', $variant);
-      $page['#attached']['library'][] = 'colorbox/colorbox';
+  // Add JS and CSS based on selected style.
+  if ($style != 'none') {
+    $page['#attached']['library'][] = "colorbox/$style";
+  }
 
-      // Add JS and CSS based on selected style.
-      switch ($style) {
-        case 'none':
-          break;
-        case 'default':
-          $page['#attached']['library'][] = 'colorbox/default';
-          break;
-        case 'plain':
-          $page['#attached']['library'][] = 'colorbox/plain';
-          break;
-        case 'stockholmsyndrome':
-          $page['#attached']['library'][] = 'colorbox/stockholmsyndrome';
-          break;
-        default:
-          $page['#attached']['library'][] = 'colorbox/default';
-      }
-
-      $already_added = TRUE;
-    }
-}
-
-
-/**
- * Implements hook_libraries_info().
- */
-function colorbox_libraries_info() {
-  $libraries['colorbox'] = array(
-    'name' => 'Colorbox plugin',
-    'vendor url' => 'http://www.jacklmoore.com/colorbox',
-    'download url' => 'https://github.com/jackmoore/colorbox/archive/1.x.zip',
-    'version arguments' => array(
-      'file' => 'jquery.colorbox-min.js',
-      'pattern' => '@(?i:Colorbox)\sv?([0-9\.a-z]+)@',
-      'lines' => 5,
-    ),
-    'files' => array(
-      'js' => array(
-        'jquery.colorbox-min.js',
-      ),
-    ),
-    'variants' => array(
-      'minified' => array(
-        'files' => array(
-          'js' => array(
-            'jquery.colorbox-min.js',
-          ),
-        ),
-      ),
-      'source' => array(
-        'files' => array(
-          'js' => array(
-            'jquery.colorbox.js',
-          ),
-        ),
-      ),
-    ),
-  );
-
-  return $libraries;
+  $already_added = TRUE;
 }
 
 /**

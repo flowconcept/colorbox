@@ -1,8 +1,6 @@
 name: 'Colorbox'
 type: module
-description: 'A light-weight, customizable lightbox plugin for jQuery 1.4.3+.'
+description: 'A light-weight, customizable lightbox plugin for jQuery.'
 package: Media
 core: 8.x
-configure: colorbox.settings
-dependencies:
-  - libraries
+configure: colorbox.admin_settings
