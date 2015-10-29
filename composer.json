@@ -3,7 +3,7 @@
     "minimum-stability": "dev",
     "type": "drupal-module",
     "soure": {
-        "url": "git@github:flowconcept/colorbox.git",
+        "url": "git@github.com:flowconcept/colorbox.git",
         "type": "git"
     }
 }
