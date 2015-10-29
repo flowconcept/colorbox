@@ -212,7 +212,7 @@ class ColorboxFormatter extends ImageFormatterBase {
   /**
    * {@inheritdoc}
    */
-  public function viewElements(FieldItemListInterface $items) {
+  public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = array();
 
     $entity = $items->getEntity();

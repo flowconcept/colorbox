@@ -5,7 +5,6 @@
  * Install, update and uninstall functions for the colorbox module.
  */
 
-use Drupal\Core\Url;
 use Drupal\Component\Utility\Unicode;
 
 /**
@@ -14,6 +13,7 @@ use Drupal\Component\Utility\Unicode;
 function colorbox_requirements($phase) {
   $requirements = array();
 
+/*
   if ($phase == 'runtime') {
     /*
     $library = libraries_detect('colorbox');
@@ -25,7 +25,11 @@ function colorbox_requirements($phase) {
         'title' => t('Colorbox plugin'),
         'value' => t('@e: At least @a', array('@e' => $error_type, '@a' => COLORBOX_MIN_PLUGIN_VERSION)),
         'severity' => REQUIREMENT_ERROR,
-        'description' => t('!error You need to download the !colorbox, extract the archive and place the colorbox directory in the %path directory on your server.', array('!error' => $error_message, '!colorbox' => \Drupal::l(t('Colorbox plugin'), Url::fromUri($library['download url'])), '%path' => 'sites/all/libraries')),
+        'description' => t('!error You need to download the <a href="!colorbox_link">Colorbox plugin</a>, extract the archive and place the colorbox directory in the %path directory on your server.', array(
+          '!error' => $error_message,
+          '!colorbox_link' => $library['download url'],
+          '%path' => 'libraries',
+        )),
       );
     }
     elseif (version_compare($library['version'], COLORBOX_MIN_PLUGIN_VERSION, '>=')) {
@@ -40,11 +44,15 @@ function colorbox_requirements($phase) {
         'title' => t('Colorbox plugin'),
         'value' => t('At least @a', array('@a' => COLORBOX_MIN_PLUGIN_VERSION)),
         'severity' => REQUIREMENT_ERROR,
-        'description' => t('You need to download a later version of the !colorbox and replace the old version located in the %path directory on your server.', array('!colorbox' => \Drupal::l(t('Colorbox plugin'), Url::fromUri($library['download url'])), '%path' => $library['library path'])),
+        'description' => t('You need to download a later version of the <a href="!colorbox_link">Colorbox plugin</a> and replace the old version located in the %path directory on your server.', array(
+          '!colorbox_link' => $library['download url'],
+          '%path' => $library['library path']
+        )),
       );
     }
     */
   }
+*/
 
   return $requirements;
 }

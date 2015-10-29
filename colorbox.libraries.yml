@@ -1,4 +1,26 @@
 colorbox:
+  remote: http://github.com/jackmoore/colorbox
+  version: "1.6.1"
+  license:
+    name: MIT
+    gpl-compatible: false
+  js:
+    /libraries/colorbox/jquery.colorbox-min.js: { minified: true }
+  dependencies:
+    - core/jquery
+
+colorbox-dev:
+  remote: http://github.com/jackmoore/colorbox
+  version: "1.6.1"
+  license:
+    name: MIT
+    gpl-compatible: false
+  js:
+    /libraries/colorbox/jquery.colorbox.js: { }
+  dependencies:
+    - core/jquery
+
+init:
   version: VERSION
   js:
     js/colorbox.js: {}
@@ -6,7 +28,7 @@ colorbox:
     - core/jquery
     - core/drupal
 
-settings:
+admin_settings:
   version: VERSION
   js:
     js/colorbox_admin_settings.js: { preprocess: false }
@@ -22,9 +44,7 @@ plain:
     theme:
       styles/plain/colorbox_style.css: {}
   dependencies:
-    - colorbox/colorbox
-    - core/jquery
-    - core/drupal
+    - colorbox/init
 
 stockholmsyndrome:
   version: VERSION
@@ -34,9 +54,7 @@ stockholmsyndrome:
     theme:
       styles/stockholmsyndrome/colorbox_style.css: {}
   dependencies:
-    - colorbox/colorbox
-    - core/jquery
-    - core/drupal
+    - colorbox/init
 
 default:
   version: VERSION
@@ -46,6 +64,44 @@ default:
     theme:
       styles/default/colorbox_style.css: {}
   dependencies:
-    - colorbox/colorbox
-    - core/jquery
-    - core/drupal
+    - colorbox/init
+
+example1:
+  version: VERSION
+  css:
+    theme:
+      /libraries/colorbox/example1/colorbox.css: {}
+  dependencies:
+    - colorbox/init
+
+example2:
+  version: VERSION
+  css:
+    theme:
+      /libraries/colorbox/example2/colorbox.css: {}
+  dependencies:
+    - colorbox/init
+
+example3:
+  version: VERSION
+  css:
+    theme:
+      /libraries/colorbox/example3/colorbox.css: {}
+  dependencies:
+    - colorbox/init
+
+example4:
+  version: VERSION
+  css:
+    theme:
+      /libraries/colorbox/example4/colorbox.css: {}
+  dependencies:
+    - colorbox/init
+
+example4:
+  version: VERSION
+  css:
+    theme:
+      /libraries/colorbox/example5/colorbox.css: {}
+  dependencies:
+    - colorbox/init

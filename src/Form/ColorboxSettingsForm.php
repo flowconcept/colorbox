@@ -37,9 +37,9 @@ class ColorboxSettingsForm extends ConfigFormBase {
     // Get all settings
     $config = $this->configFactory->get('colorbox.settings');
 
-    $form['#attached']['library'][] = 'colorbox/settings';
+    $form['#attached']['library'][] = 'colorbox/admin_settings';
 
-    $library = libraries_detect('colorbox');
+    //$library = libraries_detect('colorbox');
 
     $form['colorbox_custom_settings'] = array(
       '#type' => 'fieldset',
@@ -49,11 +49,11 @@ class ColorboxSettingsForm extends ConfigFormBase {
       'default' => t('Default'),
       'plain' => t('Plain (mainly for images)'),
       'stockholmsyndrome' => t('Stockholm Syndrome'),
-      $library['library path'] . '/example1' => t('Example 1'),
-      $library['library path'] . '/example2' => t('Example 2'),
-      $library['library path'] . '/example3' => t('Example 3'),
-      $library['library path'] . '/example4' => t('Example 4'),
-      $library['library path'] . '/example5' => t('Example 5'),
+      'example1' => t('Example 1'),
+      'example2' => t('Example 2'),
+      'example3' => t('Example 3'),
+      'example4' => t('Example 4'),
+      'example5' => t('Example 5'),
       'none' => t('None'),
     );
     $form['colorbox_custom_settings']['colorbox_style'] = array(
